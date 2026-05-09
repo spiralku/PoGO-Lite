@@ -1,0 +1,5912 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mini Pokemon GO</title>
+
+<style>
+html, body {
+* {
+  box-sizing: border-box;
+}
+
+  margin: 0;
+  overflow: hidden;
+  font-family: sans-serif;
+  touch-action: manipulation;
+}
+
+.screen {
+  display: none;
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+}
+
+#overworld {
+  display: block;
+  position: relative;
+  overflow: hidden;
+  background: black;
+}
+
+#world {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 3000px;
+  height: 3000px;
+
+  will-change: transform;
+}
+
+#map {
+  position: absolute;
+  left: 0;
+  top: 0;
+
+  width: 100%;
+  height: 100%;
+
+  background-image: url("images/overworld.jpg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.player {
+  width: 64px;
+  height: 64px;
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 3;
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  pointer-events: none;
+}
+
+.radius {
+  width: 300px;
+  height: 300px;
+
+  border: 2px solid rgba(255,150,255,0.9);
+
+  border-radius: 50%;
+
+  position: absolute;
+
+  left: 50%;
+  top: 50%;
+
+  transform: translate(-50%, -50%);
+
+  z-index: 1;
+
+  pointer-events: none;
+
+  animation:
+    radarPulse 2s linear infinite;
+}
+
+@keyframes radarPulse {
+
+  0% {
+    transform:
+      translate(-50%, -50%)
+      scale(0.2);
+
+    opacity: 0;
+  }
+  
+  70% {
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+border-color:
+      rgba(255,150,255,0.9);
+    opacity: 0.8;
+  }
+
+
+  100% {
+    transform:
+      translate(-50%, -50%)
+      scale(1);
+border-color:
+      rgba(255,255,255,0.9);
+    opacity: 0.8;
+  }
+
+}
+
+.pokemon {
+  width: 40px;
+  height: 40px;
+  position: absolute;
+  z-index: 2;
+}
+
+/* JOYSTICK */
+#joystick {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 100px;
+  height: 100px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 50%;
+}
+
+#stick {
+  width: 40px;
+  height: 40px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  left: 30px;
+  top: 30px;
+}
+
+#storageBtn {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+
+  width: 60px;
+  height: 60px;
+
+  background-image: url("images/storage.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 50%;
+
+  z-index: 5;
+}
+
+/* CATCH SCREEN */
+#catchScreen {
+  position: relative;
+
+  background-image: url("images/bg-grass.jpg"); /* your image */
+  background-size: cover;
+  background-position: center;
+}
+
+#runBattleBtn {
+  position: absolute;
+  top: 80px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+    background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  justify-content: center;
+  z-index: 20;
+}
+#runBattleBtn::before {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 2px solid #1f8a8a; 
+}
+
+#runBtn {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+    background: linear-gradient(to bottom, #e8f5e9, #c8e6c9);
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  justify-content: center;
+  z-index: 20;
+}
+#runBtn::before {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 2px solid #1f8a8a; 
+}
+
+
+
+#pokeDisplay {
+  position: absolute;
+  top: 30%;
+  width: 100%;
+  text-align: center;
+}
+
+#pokeTitle {
+  display: inline-block;
+  padding: 10px 20px;
+margin-bottom: 20px;
+  background: rgba(0, 0, 0, 0.4);
+  color: white;
+
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+
+}
+
+
+
+#pokeBox {
+  width: 140px;
+  height: 140px;
+  margin: auto;
+}
+
+#throwBtn {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80px;
+  height: 80px;
+  background: red;
+  border-radius: 50%;
+}
+
+/* STORAGE */
+#storageScreen {
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,1),
+      rgba(205,255,205,1)
+    );
+}
+
+#storageList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+/.pokeCard {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+  color: #333;
+  font-size: 12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.pokeImg {
+  width: 60px;
+  height: 60px;
+  margin: 5px auto;
+  display: block; 
+}
+
+/* INFO */
+#infoScreen {
+  background-size: cover;
+  background-position: center;
+  color: white;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ===== POKEMON GO INFO UI ===== */
+
+#infoTop {
+  height: 42%;
+  position: relative;
+}
+
+/* CP TEXT */
+#cpText {
+  position: absolute;
+  top: 18px;
+  width: 100%;
+  text-align: center;
+
+  font-size: 30px;
+  font-weight: 300;
+
+  color: white;
+
+  z-index: 5;
+}
+
+/* CP ARC */
+#cpArc {
+  position: absolute;
+
+  width: 82%;
+  height: 160px;
+
+  left: 50%;
+  top: 55px;
+
+  transform: translateX(-50%);
+
+  overflow: hidden;
+}
+
+/* actual arc */
+#cpArc::before {
+  content: "";
+
+  position: absolute;
+
+  inset: 0;
+
+  border-top: 4px solid rgba(255,255,255,0.92);
+
+  border-left: 4px solid rgba(255,255,255,0.92);
+  border-right: 4px solid rgba(255,255,255,0.92);
+
+  border-bottom: none;
+
+  border-radius: 999px 999px 0 0;
+}
+
+/* extension lines */
+#cpArc::after {
+  content: "";
+
+  position: absolute;
+
+  top: calc(100% - 2px);
+
+  width: 48px;
+  height: 4px;
+
+  left: -48px;
+
+  background: rgba(255,255,255,0.92);
+
+  box-shadow:
+    calc(100% + 82vw - 96px) 0 0 rgba(255,255,255,0.92);
+}
+
+/* POKEMON IMAGE */
+#infoImg {
+  width: 180px;
+  height: 180px;
+
+  position: absolute;
+
+  left: 50%;
+  top: 110px;
+
+  transform: translateX(-50%);
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  z-index: 4;
+}
+
+/* WHITE CARD */
+#infoCard {
+  position: absolute;
+
+  bottom: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 94%;
+  height: 62%;
+
+  background: #f7f7f7;
+
+  border-radius: 20px 20px 0 0;
+
+  padding: 26px 24px 120px;
+
+  overflow-y: auto;
+
+  color: #4f666d;
+
+  z-index: 3;
+}
+
+/* NAME */
+#infoName {
+  text-align: center;
+
+  font-size: 24px;
+  font-weight: bold;
+
+  margin-top: 12px;
+}
+
+/* HP SECTION */
+#hpSection {
+  margin-top: 10px;
+  text-align: center;
+}
+
+#hpBar {
+  width: 70%;
+  height: 8px;
+
+  margin: auto;
+
+  background: #d7d7d7;
+
+  border-radius: 999px;
+
+  overflow: hidden;
+}
+
+#hpFill {
+  width: 100%;
+  height: 100%;
+
+  background: #62e0b0;
+}
+
+#hpText {
+  margin-top: 6px;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* TYPES */
+#infoTypes {
+  margin-top: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 2px;
+}
+
+.typeBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  color: 6b7c81;
+  font-weight: bold;
+
+  width: 60px;
+}
+
+.typeIcon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+
+  font-size: 16px;
+}
+
+.typeText {
+  margin-top: 4px;
+  font-size: 10px;
+  text-align: center;
+}
+
+/* IV */
+#infoIV {
+  margin-top: 10px;
+
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  color: #6b7c81;
+}
+
+/* STATS */
+#infoStats {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-top: 26px;
+}
+
+.statCol {
+  flex: 1;
+  text-align: center;
+}
+
+.statValue {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.statLabel {
+  margin-top: 4px;
+
+  font-size: 14px;
+
+  color: #9aa9ad;
+}
+
+.statDivider {
+  width: 1px;
+  height: 60px;
+
+  background: #ddd;
+}
+
+/* RESOURCES */
+#resourceSection {
+  display: flex;
+  justify-content: space-between;
+
+  margin-top: 26px;
+
+  padding-top: 24px;
+
+  border-top: 1px solid #ddd;
+}
+
+.resourceBox {
+  flex: 1;
+  text-align: center;
+}
+
+.resourceValue {
+  font-size: 17px;
+  font-weight: bold;
+}
+
+.resourceLabel {
+  margin-top: 4px;
+
+  font-size: 11px;
+
+  color: #9aa9ad;
+}
+
+/* BUTTONS */
+.actionRow {
+  display: flex;
+
+  margin-top: 18px;
+
+  overflow: hidden;
+
+  border-radius: 999px;
+
+  background: #e5e8df;
+}
+
+.actionRow {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  margin-top: 22px;
+
+  height: 50px;
+}
+
+/* BUTTON */
+.actionBtn {
+  position: relative;
+
+  z-index: 2;
+
+  flex: 1;
+
+  border: none;
+
+  height: 50px;
+
+  border-radius: 999px;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8ed081 0%,
+      #5ed8b4 55%,
+      #21c7bb 100%
+    );
+
+}
+
+/* COST */
+.actionCost {
+  position: relative;
+
+  margin-left: 0px;
+
+  padding-left: 38px;
+  padding-right: 20px;
+
+  height: 50px;
+
+  min-width: 120px;
+
+  border-radius: 999px;
+
+  background: #e5e8df;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 14px;
+  font-weight: bold;
+
+  color: #4f666d;
+
+  z-index: 1;
+}
+/* MOVES */
+#movesSection {
+  margin-top: 28px;
+}
+
+.moveTitle {
+  font-size: 12px;
+  font-weight: bold;
+
+  color: #8b9aa0;
+
+  margin-bottom: 14px;
+}
+
+.moveItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 16px 0;
+
+  border-bottom: 1px solid #ddd;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.moveLeft {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+}
+
+.moveTypeIcon {
+  width: 36px;
+  height: 36px;
+
+  border-radius: 50%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.moveDamage {
+  font-weight: bold;
+  color: #4f666d;
+}
+
+/* TOP BUTTONS */
+#favoriteBtn {
+  position: absolute;
+
+  right: 22px;
+
+  color: white;
+
+  font-size: 36px;
+
+  z-index: 6;
+}
+
+#favoriteBtn {
+  top: 18px;
+}
+
+
+#controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+#controls select {
+  flex: 1;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+/* POKEBALL */
+#ball {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 120px;
+  height: 120px;
+
+  background-image: url("images/pokeball.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+
+  touch-action: none;
+}
+
+
+/* ðŸ”¥ BASE FLOATING BUTTON */
+.fab {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+
+  background: #1f8a8a; /* teal */
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  
+
+  z-index: 20;
+}
+
+/* âœ¨ OUTER GLOW RING */
+.fab::before {
+  content: "";
+  position: absolute;
+  width: 80%;
+  height: 80%;
+  border-radius: 50%;
+  border: 2px solid #7CFC9A; /* lime glow */
+}
+
+/* ðŸŽ¯ ICON */
+.fab-inner {
+  color: #7CFC9A;
+  font-size: 28px;
+  f
+}
+
+.fab-close {
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* container */
+#controls {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+  margin-left: 10px;
+  margin-right: 10px;
+}
+
+/* wrapper (for custom arrow) */
+.selectWrap {
+  flex: 1;
+  position: relative;
+}
+
+/* actual select */
+.selectWrap select {
+  width: 100%;
+  padding: 10px 35px 10px 12px;
+  border-radius: 20px;
+  border: none;
+
+  background: #CBD9BF; /* soft green */
+  color: #2e7d32;
+  font-weight: bold;
+
+  appearance: none; /* remove default arrow */
+  -webkit-appearance: none;
+}
+
+/* custom arrow */
+.selectWrap::after {
+  content: "▼";
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  color: #2e7d32;
+  pointer-events: none;
+}
+
+
+
+#flash {
+  position: absolute;
+  inset: 0;
+
+  background: white;
+
+  opacity: 0;
+  pointer-events: none;
+
+  z-index: 100;
+
+  transition: opacity 0.4s;
+}
+
+#encounterText {
+  position: absolute;
+
+  bottom: 350px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 12px 18px;
+min-width: 100px;
+max-width: 85vw;
+
+text-align: center;
+
+white-space: nowrap;
+  background: rgba(0,0,0,0.5);
+
+  color: white;
+
+  border-radius: 999px;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  opacity: 0;
+
+  z-index: 20;
+
+  transition:
+    opacity 0.4s,
+    transform 0.4s;
+}
+
+#catchMessage {
+  position: absolute;
+
+  bottom: 350px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  padding: 12px 20px;
+min-width: 100px;
+max-width: 85vw;
+
+text-align: center;
+
+white-space: nowrap;
+  background: rgba(0,0,0,0.5);
+
+  color: white;
+
+  border-radius: 999px;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  opacity: 0;
+
+  z-index: 50;
+
+  transition:
+    opacity 0.3s,
+    transform 0.3s;
+}
+
+#rewardPopup {
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0,0,0,0.18);
+
+  opacity: 0;
+  pointer-events: none;
+
+  z-index: 60;
+
+  transition: opacity 0.25s;
+}
+#rewardCard {
+  width: 92%;
+  max-width: 420px;
+
+  background: rgba(255,255,255,0.96);
+
+  border-radius: 10px;
+
+  padding: 28px 24px 34px;
+
+  text-align: center;
+
+ 
+
+  transform: scale(0.8);
+
+  transition: transform 0.3s;
+
+  
+}
+
+#rewardTitle {
+  font-size: 24px;
+  font-weight: bold;
+
+  margin-bottom: 20px;
+}
+
+#rewardDust {
+  font-size: 20px;
+
+  margin-bottom: 24px;
+}
+
+#rewardBtn {
+  border: none;
+
+  width: 75%;
+  height: 54px;
+
+  border-radius: 999px;
+
+  margin-top: 18px;
+
+  color: white;
+
+  font-size: 20px;
+  font-weight: bold;
+
+  letter-spacing: 1px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8ed081 0%,
+      #5ed8b4 55%,
+      #21c7bb 100%
+    );
+
+  
+  transition:
+    transform 0.15s,
+    opacity 0.15s;
+}
+#rewardBtn:active {
+  transform: scale(0.96);
+}
+
+#battleScreen {
+  background: #87ceeb;
+  overflow: hidden;
+}
+
+#battleBg {
+  position: absolute;
+  inset: 0;
+
+  background-image: url("images/bg-grass.jpg");
+  background-size: cover;
+  background-position: center;
+
+  filter: brightness(0.9);
+}
+
+#enemySection {
+  position: absolute;
+
+  top: 220px;
+  right: 30px;
+
+  width: 260px;
+
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+#playerSection {
+  position: absolute;
+
+  bottom: 80px;
+  left: 20px;
+
+  width: 260px;
+
+  z-index: 2;
+}
+
+#enemyPokemon,
+#playerPokemon {
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#enemyPokemon {
+  margin-left: auto;
+
+  transform:
+    scaleX(-1)
+    translateY(10px);
+
+  width: 130px;
+  height: 130px;
+}
+
+#playerPokemon {
+  transform:
+    scale(1.25);
+
+  width: 190px;
+  height: 190px;
+
+  margin-top: 10px;
+}
+
+
+
+.hpBar {
+  width: 170px;
+  height: 14px;
+
+  margin: 10px 0;
+
+  background: rgba(0,0,0,0.35);
+
+  border-radius: 1px;
+
+  overflow: hidden;
+  
+    box-shadow:
+    0 0 0 2px black,  
+    0 0 0 4px white;  
+}
+
+
+
+#enemyHP,
+#playerHP {
+  width: 100%;
+  height: 100%;
+
+  background: #5eff87;
+
+  transition: width 0.2s;
+}
+
+
+#chargedMoveWrapper {
+  position: absolute;
+
+  bottom: 28px;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  z-index: 6;
+}
+
+#chargedBtn {
+  position: relative;
+
+  width: 70px;
+  height: 70px;
+
+  border: none;
+
+  border-radius: 50%;
+
+  overflow: hidden;
+
+  background:
+    rgba(0,0,0,0.45);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow:
+  inset 0 0 0 4px rgba(0,0,0,0.20);
+
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
+}
+
+#chargedBtn::before {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: var(--chargePercent, 0%);
+
+  background:
+    var(--chargeGradient);
+
+  transition:
+    height 0.25s ease-out;
+
+  z-index: 0;
+}
+
+#chargedBtn::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: 0;
+
+  width: 100%;
+  height: var(--overflowPercent, 0%);
+
+  background:
+    rgba(255,255,255,0.35);
+
+  transition:
+    height 0.25s ease-out;
+
+  z-index: 1;
+}
+
+#chargedBtn.ready {
+  box-shadow:
+  inset 0 0 0 4px rgba(0,0,0,0.25);
+  
+}
+
+#chargedIcon {
+  position: relative;
+
+  z-index: 2;
+
+  font-size: 20px;
+
+  text-shadow:
+    0 2px 4px rgba(0,0,0,0.35);
+}
+
+#chargedMoveName {
+  margin-top: 8px;
+
+  color: white;
+
+  font-size: 16px;
+  font-weight: bold;
+
+}
+
+#battleText {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%);
+
+  background: rgba(0,0,0,0.6);
+
+  color: white;
+
+  padding: 14px 22px;
+
+  border-radius: 999px;
+
+  font-size: 24px;
+  font-weight: bold;
+
+  opacity: 0;
+
+  z-index: 10;
+
+  transition: opacity 0.2s;
+}
+
+#battleHUD {
+  position: absolute;
+
+  top: 16px;
+  left: 0;
+
+  width: 100%;
+
+  z-index: 8;
+
+  pointer-events: none;
+}
+
+.battleInfoCard {
+  position: absolute;
+
+  min-width: 150px;
+width: fit-content;
+
+max-width: 220px;
+  background:
+    rgba(255,255,255,0.92);
+
+  border-radius: 10px;
+
+  padding:
+    10px 14px;
+
+  box-shadow:
+    0 4px 12px rgba(0,0,0,0.12);
+
+}
+
+#playerInfoCard {
+  left: 16px;
+}
+
+#enemyInfoCard {
+  right: 16px;
+
+  text-align: right;
+}
+
+#playerInfoName,
+#enemyInfoName {
+  color: #146b73;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+#playerInfoCP,
+#enemyInfoCP {
+  color: #146b73;
+
+  font-size: 12px;
+  font-weight: bold;
+}
+
+
+#playerInfoTypes,
+#enemyInfoTypes {
+  margin-top: 6px;
+
+  font-size: 10px;
+}
+
+.battleNameRow {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 12px;
+
+  width: 100%;
+}
+
+#playerInfoName,
+#enemyInfoName,
+#playerInfoCP,
+#enemyInfoCP {
+  white-space: nowrap;
+}
+
+/* ===== BATTLE PARTY SCREEN ===== */
+
+#battlePartyScreen {
+  background:
+    linear-gradient(
+      rgba(0,0,0,0.55),
+      rgba(0,0,0,0.75)
+    ),
+    url('images/bg-grass.jpg');
+
+  background-size: cover;
+  background-position: center;
+
+  color: white;
+
+  overflow-y: auto;
+}
+
+/* CENTER CONTENT */
+#battlePartyContent {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  padding-top: 10px;
+}
+
+/* ICON */
+#battleLeagueIcon {
+  font-size: 50px;
+
+  margin-bottom: 30px;
+}
+
+/* TITLE */
+#battleLeagueTitle {
+  font-size: 22px;
+  font-weight: bold;
+
+  text-align: center;
+}
+
+/* SUBTITLE */
+#battleLeagueSubtitle {
+  margin-top: 12px;
+
+  font-size: 14px;
+
+  opacity: 0.85;
+}
+
+/* DIVIDER */
+#battleDivider {
+  width: 180px;
+  height: 3px;
+
+  background: rgba(255,255,255,0.7);
+
+  margin: 60px 0;
+}
+
+/* TEXT */
+#choosePartyText {
+  font-size: 12px;
+  letter-spacing: 2px;
+
+  opacity: 0.9;
+
+  margin-bottom: 28px;
+}
+
+/* CARD */
+#partyCard {
+  width: 88%;
+
+  background: #f8f8f5;
+
+  border-radius: 28px;
+
+  padding: 30px;
+
+  color: #4f666d;
+
+  text-align: center;
+}
+
+/* CARD TITLE */
+#partyTitle {
+  font-size: 19px;
+  font-weight: bold;
+  margin-bottom: 2px;
+}
+
+#partyDesc {
+  font-size: 13px;
+  font-weight: bold;
+  opacity: 0.5;
+
+  margin-bottom: 10px;
+}
+
+/* SLOT */
+#partySlot {
+  width: 240px;
+
+  margin: auto;
+
+  cursor: pointer;
+}
+
+/* CP */
+#partySlotCP {
+  font-size: 14px;
+  font-weight: bold;
+
+  margin-bottom: 10px;
+}
+
+/* IMAGE */
+#partySlotImg {
+  width: 180px;
+  height: 180px;
+
+  margin: auto;
+
+  border-radius: 20px;
+
+  background: white;
+
+  border: 3px solid #dfe8ec;
+
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+/* NAME */
+#partySlotName {
+  margin-top: 14px;
+
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* START BUTTON */
+#battleStartBtn {
+  margin-top: 40px;
+
+  width: 80%;
+
+  border: none;
+
+  border-radius: 999px;
+
+  padding: 22px;
+
+  font-size: 18px;
+  font-weight: bold;
+
+  color: white;
+
+  background:
+    linear-gradient(
+      90deg,
+      #8ed081 0%,
+      #5ed8b4 55%,
+      #21c7bb 100%
+    );
+}
+
+/* OVERWORLD BUTTON */
+#battleBtn {
+  position: absolute;
+  bottom: 100px;
+  right: 20px;
+
+  width: 60px;
+  height: 60px;
+
+  background-image: url("images/storage.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 50%;
+
+  z-index: 5;
+}
+
+/* ===== MENU BUTTON ===== */
+
+#menuBtn {
+  position: absolute;
+  bottom: 35px;
+  left: 45%;
+
+  width: 60px;
+  height: 60px;
+
+  background-image: url("images/storage.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 50%;
+
+  z-index: 5;
+}
+
+/* ===== MENU POPUP ===== */
+
+#gameMenu {
+  position: absolute;
+
+  inset: 0;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,1),
+      rgba(205,255,205,1)
+    );
+
+  z-index: 100;
+
+  display: none;
+}
+
+/* CLOSE BUTTON */
+#menuClose {
+  position: absolute;
+  bottom: 35px;
+  left: 45%;
+
+  width: 60px;
+  height: 60px;
+
+  background-image: url("images/storage.png");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  border-radius: 50%;
+
+  z-index: 5;
+}
+
+/* MENU ITEMS */
+.menuItem {
+  position: absolute;
+
+  text-align: center;
+}
+
+/* CIRCLE */
+.menuCircle {
+  width: 50px;
+  height: 50px;
+
+  border-radius: 50%;
+
+  background: white;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+
+  color: #4f666d;
+  
+  box-shadow:
+    0 0 0 2px #4f666d,  
+    0 0 0 6px white,
+    0 0 0 8px rgba(128, 128, 128, 0.5);
+    
+
+}
+
+/* LABEL */
+.menuLabel {
+  margin-top: 12px;
+
+  font-size: 12px;
+  font-weight: bold;
+
+  color: #4f666d;
+
+  letter-spacing: 1px;
+}
+
+/* POSITIONS */
+#menuPokemon {
+  left: 80px;
+  bottom: 170px;
+}
+
+#menuBattle {
+  right: 80px;
+  bottom: 170px;
+}
+
+#menuShop {
+  left: 50%;
+  bottom: 320px;
+
+  transform: translateX(-50%);
+}
+
+.fleeLine{
+position:absolute;
+height:2px;
+background:rgba(255,255,255,0.7);
+border-radius:999px;
+pointer-events:none;
+z-index:20;
+}
+
+.fleeSmoke{
+position:absolute;
+width:60px;
+height:60px;
+background:#5f5f5f;
+border-radius:50%;
+pointer-events:none;
+z-index:20;
+box-shadow:
+28px 0 #4f4f4f,
+-28px 0 #707070,
+0 -24px #7a7a7a,
+0 24px #4a4a4a,
+22px -18px #666666,
+-22px -18px #595959,
+20px 20px #525252,
+-20px 20px #686868;
+}
+
+#evoContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#evoContainer img {
+  position: absolute;
+  width: 180px;
+  image-rendering: pixelated;
+  transition: opacity 0.2s ease, transform 0.2s ease, filter 0.2s ease;
+}
+
+#evoScene {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(#0b1b3a, #050914);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  overflow: hidden;
+}
+
+#evoPokemon {
+  width: 180px;
+  image-rendering: pixelated;
+  transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+#evoName {
+
+  position: absolute;
+
+  bottom: 140px;
+
+  color: white;
+
+  font-size: 28px;
+  font-weight: bold;
+
+  text-shadow:
+    0 0 10px rgba(255,255,255,0.8);
+
+  opacity: 0;
+
+  transition: opacity 0.5s ease;
+
+  pointer-events: none;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.pokemon.far {
+  opacity: 0.5;
+  filter: brightness(0);
+}
+
+.pokemon.near {
+  opacity: 1;
+  filter: brightness(1);
+}
+
+#partySlots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+.partySlot {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  border: 2px solid white;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  cursor: pointer;
+}
+
+.slotIndex {
+  position: absolute;
+  top: 2px;
+  left: 6px;
+  font-size: 12px;
+  color: white;
+  text-shadow: 0 1px 2px black;
+}
+
+#switchBar {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+.switchIcon {
+  width: 50px;
+  height: 50px;
+  border-radius: 10px;
+  border: 2px solid white;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+
+#partySlots {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 10px 0;
+}
+
+/* WRAPPER (controls layout) */
+.partySlotWrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 80px;
+  cursor: pointer;
+}
+
+/* THE BOX */
+.partySlot {
+  width: 80px;
+  height: 80px;
+  border-radius: 10px;
+  border: 2px solid #d7eeff;
+  background-size: cover;
+  background-position: center;
+}
+
+/* CP ABOVE */
+.slotCP {
+  font-size: 18px;
+  font-weight: bold;
+  color: #4f666d;
+  margin-bottom: 3px;
+  min-height: 14px;
+}
+
+/* NAME BELOW */
+.slotName {
+  font-size: 15px;
+  font-weight: bold;
+  color: #4f666d;
+  margin-top: 3px;
+  min-height: 14px;
+  text-align: center;
+}
+
+
+#switchBar {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.switchIcon {
+  width: 70px;
+  height: 70px;
+  border-radius: 10px;
+  background: rgba(0,0,0,0.6);
+  border: 2px solid #61D97F;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.switchCP {
+  font-size: 10px;
+  color: white;
+  font-weight: bold;
+  margin-top: 2px;
+  text-shadow: 0 1px 2px black;
+}
+
+.switchImg {
+  width: 40px;
+  height: 40px;
+  background-size: cover;
+  background-position: center;
+  margin-top: 2px;
+}
+
+.switchHPBar {
+  width: 80%;
+  height: 4px;
+  background: #333;
+  border-radius: 1px;
+  margin-top: 0px;
+  overflow: hidden;
+}
+
+.switchHPFill {
+  height: 100%;
+  background: #5DFF87;
+}
+
+.switchOverlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 0%;
+  background: rgba(0,0,0,0.6);
+  pointer-events: none;
+}
+
+#battleFade {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: black;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease;
+  z-index: 99999;
+}
+</style>
+</head>
+
+<body>
+<!------- EVO SCREEN ------>
+<div id="evoScene" class="hidden">
+
+  <div id="evoContainer">
+
+    <img id="evoOld">
+    <img id="evoNew">
+<div id="evoName"></div>
+  </div>
+
+</div>
+
+<!-- OVERWORLD -->
+<div id="overworld" class="screen">
+  <div id="world">
+  <div id="flash"></div>
+  <div id="map"></div>
+</div>
+
+<div class="radius"></div>
+<div class="player"></div>
+
+<div id="joystick">
+    <div id="stick"></div>
+  </div>
+<div id="menuBtn" onclick="toggleGameMenu()"></div>
+</div>
+
+<div id="gameMenu">
+
+  <!-- CLOSE -->
+  <div id="menuClose"
+       onclick="toggleGameMenu()"></div>
+
+  <!-- STORAGE -->
+  <div class="menuItem"
+       id="menuPokemon"
+       onclick="
+         toggleGameMenu();
+         showScreen('storageScreen');
+       ">
+
+    <div class="menuCircle">
+      💻
+    </div>
+
+    <div class="menuLabel">
+      POKÉMON
+    </div>
+
+  </div>
+
+  <!-- BATTLE -->
+  <div class="menuItem"
+       id="menuBattle"
+       onclick="
+         toggleGameMenu();
+         showScreen('battlePartyScreen');
+       ">
+
+    <div class="menuCircle">
+      ⚔
+    </div>
+
+    <div class="menuLabel">
+      BATTLE
+    </div>
+
+  </div>
+
+<div id="saveLoadMenu">
+  <button class="gameBtn" onclick="manualSave()">💾 SAVE</button>
+  <button class="gameBtn" onclick="manualLoad()">📂 LOAD</button>
+  <button class="gameBtn" onclick="deleteSave()">🗑️ DELETE</button>
+</div>
+
+  <!-- PLACEHOLDER -->
+  <div class="menuItem"
+       id="menuShop">
+
+    <div class="menuCircle">
+      📕
+    </div>
+
+    <div class="menuLabel">
+     POKEDEX
+    </div>
+
+  </div>
+
+</div>
+
+<!-- CATCH -->
+<div id="catchScreen" class="screen">
+  <div id="runBtn" onclick="showScreen('overworld')">🏃</div>
+<div id="encounterText"></div>
+<div id="catchMessage"></div>
+
+<div id="rewardPopup">
+  <div id="rewardCard">
+
+    <div id="rewardTitle">Rewards</div>
+
+    <div id="rewardDust"></div>
+    <hr>
+
+    <button id="rewardBtn">
+      OK
+    </button>
+
+  </div>
+</div>
+  <div id="pokeDisplay">
+    <div id="pokeTitle"></div>
+    <div id="pokeBox"></div>
+  </div>
+
+  <div id="ball"></div>
+</div>
+
+<!-- STORAGE -->
+<div id="storageScreen" class="screen">
+  <div class="fab fab-close" onclick="showScreen('overworld')">
+  <div class="fab-inner">X</div>
+</div>
+
+<div id="controls">
+  <div class="selectWrap">
+    <select id="sortSelect" onchange="renderStorage()">
+      <option value="newest">Newest</option>
+      <option value="oldest">Oldest</option>
+      <option value="dexAsc">Dex (Low to High)</option>
+      <option value="dexDesc">Dex (High to Low)</option>
+      <option value="cpDesc">CP (High to Low)</option>
+      <option value="cpAsc">CP (Low to High)</option>
+    </select>
+  </div>
+
+  <div class="selectWrap">
+    <select id="filterType" onchange="renderStorage()">
+ <option value="all">All Types</option>
+    </select>
+  </div>
+</div>
+
+  <div id="storageList"></div>
+</div>
+
+<!--- BATTLE SCREEN SELECT --->
+<div class="screen" id="battlePartyScreen">
+
+  <div id="battleBgFade"></div>
+
+  <div id="battlePartyContent">
+<div id="runBtn" onclick="showScreen('overworld')">🏃</div>
+    <div id="battleLeagueIcon">⚔</div>
+
+    <div id="battleLeagueTitle">
+      MASTER LEAGUE
+    </div>
+
+    <div id="battleLeagueSubtitle">
+      No Limit
+    </div>
+
+    <div id="battleDivider"></div>
+
+    <div id="choosePartyText">
+      CHOOSE YOUR PARTY
+    </div>
+
+    <!-- PARTY CARD -->
+<div id="partyCard">
+
+  <div id="partyTitle">
+    Battle Party
+  </div>
+    <div id="partyDesc">
+    Tap to swap Pokèmon
+  </div>
+
+
+  <!-- 3 SLOT SYSTEM -->
+<div id="partySlots">
+
+  <div class="partySlotWrapper" onclick="openBattlePokemonPicker(0)">
+    <div class="slotCP"></div>
+    <div class="partySlot"></div>
+    <div class="slotName"></div>
+  </div>
+
+  <div class="partySlotWrapper" onclick="openBattlePokemonPicker(1)">
+    <div class="slotCP"></div>
+    <div class="partySlot"></div>
+    <div class="slotName"></div>
+  </div>
+
+  <div class="partySlotWrapper" onclick="openBattlePokemonPicker(2)">
+    <div class="slotCP"></div>
+    <div class="partySlot"></div>
+    <div class="slotName"></div>
+  </div>
+
+</div>
+
+  <!-- START BUTTON -->
+  <button id="battleStartBtn"
+          onclick="beginMatchmaking()">
+    START BATTLE
+  </button>
+
+</div>
+
+  </div>
+
+</div>
+
+<!-- INFO -->
+<div id="infoScreen" class="screen">
+  <div class="fab fab-close" onclick="showScreen('storageScreen')">
+  <div class="fab-inner">X</div>
+</div>
+<div id="infoTop">
+
+  <div id="cpText"></div>
+
+  <!-- CP ARC -->
+  <div id="cpArc"></div>
+
+  <!-- TOP RIGHT BUTTONS -->
+  <div id="favoriteBtn">☆</div>
+
+  <div id="infoImg"></div>
+
+</div>
+  <div id="infoCard">
+
+  <div id="infoName"></div>
+
+  <!-- HP BAR -->
+  <div id="hpSection">
+    <div id="hpBar">
+      <div id="hpFill"></div>
+    </div>
+
+    <div id="hpText"></div>
+  </div>
+
+  <!-- TYPES -->
+  <div id="infoTypes"></div>
+
+  <!-- IV -->
+ <!-- <div id="infoIV"></div> -->
+
+  
+  <!-- RESOURCES -->
+  <div id="resourceSection">
+
+    <div class="resourceBox">
+      <div class="resourceValue" id="dustCount">0</div>
+      <div class="resourceLabel">STARDUST</div>
+    </div>
+
+    <div class="resourceBox">
+  <div class="resourceValue" id="ivPercentText">0%</div>
+  <div class="resourceLabel" id="ivLabel">IV</div>
+</div>
+
+<div class="resourceBox">
+  <div class="resourceValue" id="infoCandy">0</div>
+  <div class="resourceLabel" id="infoCandyFamily">Candy</div>
+</div>
+
+  </div>
+
+  <!-- ACTION BUTTONS -->
+  <div class="actionRow">
+
+    <button
+  class="actionBtn"
+  onclick="powerUpPokemon()"
+>
+  POWER UP
+</button>
+
+    <div
+  class="actionCost"
+  id="powerUpCost"
+>
+  ✨ 1000
+</div>
+
+  </div>
+<div id="evolveRow">
+  <div class="actionRow">
+
+    <button id="evolveBtn" class="actionBtn" onclick="evolvePokemon()">
+EVOLVE
+</button>
+
+    <div class="actionCost" id="evolveCost" >
+      🍬 1000
+    </div>
+
+  </div>
+</div>
+  <!-- MOVES -->
+  <div id="movesSection">
+
+    <div class="moveTitle">MOVES</div>
+
+    <div class="moveItem" id="infoFast"></div>
+
+    <div class="moveItem" id="infoCharged"></div>
+
+  </div>
+
+</div>
+</div>
+
+<!------- BATTLE --------->
+<div id="battleScreen" class="screen">
+
+  <div id="battleBg"></div>
+<div id="battleHUD">
+  <div id="playerInfoCard" class="battleInfoCard">
+    <div class="battleNameRow">
+
+  <div id="playerInfoName"></div>
+
+  <div id="playerInfoCP"></div>
+
+</div>
+    <div id="playerInfoTypes"></div>
+  </div>
+
+  <div id="enemyInfoCard" class="battleInfoCard">
+    <div class="battleNameRow">
+<div id="enemyInfoCP"></div>
+  <div id="enemyInfoName"></div>
+
+  
+
+</div>
+    <div id="enemyInfoTypes"></div>
+  </div>
+
+</div>
+  <div id="enemySection">
+
+    
+
+    <div class="hpBar">
+      <div id="enemyHP"></div>
+    </div>
+
+    
+
+    <div id="enemyPokemon"></div>
+
+  </div>
+
+  <div id="playerSection">
+
+  
+
+  <div class="hpBar">
+    <div id="playerHP"></div>
+  </div>
+
+  
+
+  <div id="playerPokemon"></div>
+
+</div>
+<div id="runBattleBtn" onclick="showScreen('overworld')">🏃</div>
+<div id="switchBar"></div>
+<div id="chargedMoveWrapper">
+
+  <button id="chargedBtn">
+
+    <div id="chargedIcon">
+      🔥
+    </div>
+
+  </button>
+
+  <div id="chargedMoveName">
+    Flamethrower
+  </div>
+
+</div>
+
+  <div id="battleText"></div>
+
+</div>
+
+
+<div id="battleFade"></div>
+<script>
+// -------- SCREEN --------
+function showScreen(id) {
+
+  // reset battle pokemon selection
+  // when returning to overworld
+  if (id === "overworld") {
+    choosingBattlePokemon = false;
+    document.querySelector(".player")
+  .style.opacity = "1";
+
+const radius =
+  document.querySelector(".radius");
+
+radius.style.animation =
+  "radarPulse 2s linear infinite";
+
+radius.style.opacity = "1";
+  }
+
+  // hide all screens
+  document
+    .querySelectorAll(".screen")
+    .forEach(s => s.style.display = "none");
+
+  // show selected screen
+  document.getElementById(id)
+    .style.display = "block";
+
+  // prevent duplicate filter options
+  const filter =
+    document.getElementById("filterType");
+
+  if (filter && filter.children.length <= 1) {
+
+    Object.keys(typeIcons).forEach(type => {
+
+      const option =
+        document.createElement("option");
+
+      option.value = type;
+
+      option.textContent =
+        `${typeIcons[type]} ${type}`;
+
+      filter.appendChild(option);
+
+    });
+
+  }
+
+}
+
+// -------- DATA --------
+let selectedBattleParty = [];
+let choosingBattlePokemon = false;
+let storage = [];
+let stardust = 0;
+let candyBag = {};
+
+const MAX_POKEMON = 20;
+
+// spawn timing per pokemon
+const MIN_DESPAWN_TIME = 1 * 60 * 1000;   // 5 min
+const MAX_DESPAWN_TIME = 3 * 60 * 1000;  // 15 min
+
+let overworldPokemon = [];
+let currentPokemon = null;
+
+let player = {
+
+  x: 1500,
+  y: 1500,
+
+  direction: "down",
+
+  sprites: {
+    up: "images/player_up.png",
+    down: "images/player_down.png",
+    left: "images/player_left.png",
+    right: "images/player_right.png"
+  }
+
+};
+
+let distanceWalked = 0;
+let lastPlayerPos = { x: player.x, y: player.y };
+let currentBattleSlot = 0;
+const SPAWN_DISTANCE = 300;
+
+let ball = document.getElementById("ball");
+
+let isDragging = false;
+let startX = 0;
+let startY = 0;
+
+
+let ballPos = { x: 0, y: 0 };
+let isThrowing = false;
+
+let throwProgress = 0;
+let throwDuration = 40; // smaller = faster
+let curveStrength = 0;
+let startPos = { x: 0, y: 0 };
+let controlPos = { x: 0, y: 0 };
+let endPos = { x: 0, y: 0 };
+let hasPassedPeak = false;
+let lastY = 0;
+let catchAnimating = false;
+let catchProgress = 0;
+let catchStart = { x: 0, y: 0 };
+let catchTarget = { x: 0, y: 0 };
+
+let isShaking = false;
+let shakeCount = 0;
+let shakeTimer = 0;
+let shakeDir = 1;
+let shakeOffset = 0;
+let shakePauseTimer = 0;
+
+const pokemonEls = new Map();
+let cameraLocked = false;
+
+
+let viewingPokemon = null;
+battleState = {
+  active: false,
+  battleStarted: false,
+
+  playerTeam: [],
+  enemyTeam: [],
+
+  activePlayerIndex: 0,
+  activeEnemyIndex: 0,
+
+  playerCooldown: 0,
+  enemyCooldown: 0,
+  enemyAI: 0,
+
+  switchCooldown: 0
+};
+
+const saveData = {
+  player,
+  storage,
+  overworldPokemon,
+  stardust,
+  candyBag,
+  distanceWalked,
+  lastPlayerPos
+};
+
+const playerEl =
+  document.querySelector(".player");
+  updatePlayerSprite();
+
+// -------- POKEDEX --------
+const typeColors = {
+  Normal: ["#d3d3d3", "#a8a8a8"],
+  Fire: ["#ff9966", "#ff5e62"],
+  Water: ["#36d1dc", "#5b86e5"],
+  Electric: ["#fddb92", "#fbb034"],
+  Grass: ["#a8e063", "#56ab2f"],
+  Ice: ["#a1c4fd", "#c2e9fb"],
+  Fighting: ["#ff5858", "#f857a6"],
+  Poison: ["#c471ed", "#f64f59"],
+  Ground: ["#e0c068", "#bfa045"],
+  Flying: ["#89f7fe", "#66a6ff"],
+  Psychic: ["#ff9a9e", "#fad0c4"],
+  Bug: ["#c6ffdd", "#a8e063"],
+  Rock: ["#d7ccc8", "#a1887f"],
+  Ghost: ["#7f7fd5", "#5a5aa5"],
+  Dragon: ["#667eea", "#764ba2"],
+  Dark: ["#434343", "#000000"],
+  Steel: ["#bdc3c7", "#2c3e50"],
+  Fairy: ["#ffdde1", "#ee9ca7"],
+  Default: ["#a8e063", "#56ab2f"]
+};
+const typeIcons = { Normal:"⚪", Fire:"🔥", Water:"💧", Electric:"⚡", Grass:"🌿", Ice:"❄️", Fighting:"🥊", Poison:"👾", Ground:"🟫", Flying:"🪽", Psychic:"🌀", Bug:"🪲", Rock:"🪨", Ghost:"👻", Dragon:"🐉", Dark:"🌑", Steel:"⚙️", Fairy:"🌟" };
+
+const MOVES={
+
+Tackle:{
+type:"Normal",
+category:"fast",
+damage:5,
+energyGain:8,
+cooldown:500
+},
+
+VineWhip:{
+type:"Grass",
+category:"fast",
+damage:4,
+energyGain:10,
+cooldown:400
+},
+
+RazorLeaf:{
+type:"Grass",
+category:"fast",
+damage:6,
+energyGain:8,
+cooldown:500
+},
+
+Scratch:{
+type:"Normal",
+category:"fast",
+damage:5,
+energyGain:8,
+cooldown:500
+},
+
+QuickAttack:{
+type:"Normal",
+category:"fast",
+damage:2,
+energyGain:4,
+cooldown:300
+},
+
+Ember:{
+type:"Fire",
+category:"fast",
+damage:5,
+energyGain:9,
+cooldown:500
+},
+
+FireFang:{
+type:"Fire",
+category:"fast",
+damage:7,
+energyGain:7,
+cooldown:600
+},
+
+FireSpin:{
+type:"Fire",
+category:"fast",
+damage:10,
+energyGain:10,
+cooldown:800
+},
+
+WaterGun:{
+type:"Water",
+category:"fast",
+damage:5,
+energyGain:9,
+cooldown:500
+},
+
+Bubble:{
+type:"Water",
+category:"fast",
+damage:4,
+energyGain:10,
+cooldown:450
+},
+
+Bite:{
+type:"Dark",
+category:"fast",
+damage:6,
+energyGain:8,
+cooldown:500
+},
+
+ThunderShock:{
+type:"Electric",
+category:"fast",
+damage:4,
+energyGain:11,
+cooldown:400
+},
+
+AirSlash:{
+type:"Flying",
+category:"fast",
+damage:7,
+energyGain:7,
+cooldown:600
+},
+
+PowerWhip:{
+type:"Grass",
+category:"charged",
+damage:40,
+energyCost:50
+},
+
+SolarBeam:{
+type:"Grass",
+category:"charged",
+damage:55,
+energyCost:60
+},
+
+FrenzyPlant:{
+type:"Grass",
+category:"charged",
+damage:65,
+energyCost:65
+},
+
+Flamethrower:{
+type:"Fire",
+category:"charged",
+damage:45,
+energyCost:50
+},
+
+HyperBeam:{
+type:"Normal",
+category:"charged",
+damage:80,
+energyCost:100
+},
+
+FirePunch:{
+type:"Fire",
+category:"charged",
+damage:35,
+energyCost:40
+},
+
+BlastBurn:{
+type:"Fire",
+category:"charged",
+damage:70,
+energyCost:65
+},
+
+HydroPump:{
+type:"Water",
+category:"charged",
+damage:60,
+energyCost:65
+},
+
+HydroCannon:{
+type:"Water",
+category:"charged",
+damage:65,
+energyCost:60
+},
+
+AquaTail:{
+type:"Water",
+category:"charged",
+damage:40,
+energyCost:45
+},
+
+WildCharge:{
+type:"Electric",
+category:"charged",
+damage:50,
+energyCost:55
+},
+
+Thunderbolt:{
+type:"Electric",
+category:"charged",
+damage:50,
+energyCost:55
+}
+
+};
+
+const POKEDEX = {
+
+Bulbasaur: {
+dex: 1,
+name: "Bulbasaur",
+category: "A",
+description: "A",
+type: ["Grass", "Poison"],
+evolvesFrom: null,
+evolvesTo: "Ivysaur",
+evolutionCost: 25,
+image: "images/bulbasaur.png",
+shinyImage: "images/shiny/bulbasaur.png",
+canBeShiny: true,
+pokemonScale: 1.1,
+rarity: "common",
+spawnWeight: 40,
+spawnTime: ["day"],
+biomes: ["grass"],
+weatherBoost: ["sunny"],
+catchRate: 0.8,
+escapeRate: 0.19,
+fleeRate: 0.01,
+stardustReward: 100,
+candyReward: 3,
+candyFamily: "Bulbasaur",
+buddyDistance: 1,
+baseStats: {
+attack: 118,
+defense: 111,
+hp: 128
+},
+fastMoves: ["VineWhip", "Tackle"],
+chargedMoves: ["PowerWhip"]
+},
+
+Ivysaur: {
+dex: 2,
+name: "Ivysaur",
+category: "A",
+description: "A",
+type: ["Grass", "Poison"],
+evolvesFrom: "Bulbasaur",
+evolvesTo: "Venusaur",
+evolutionCost: 100,
+image: "images/ivysaur.png",
+shinyImage: "images/shiny/ivysaur.png",
+canBeShiny: true,
+pokemonScale: 1.3,
+rarity: "uncommon",
+spawnWeight: 15,
+spawnTime: ["day"],
+biomes: ["grass"],
+weatherBoost: ["sunny"],
+catchRate: 0.65,
+escapeRate: 0.3,
+fleeRate: 0.05,
+stardustReward: 300,
+candyReward: 5,
+candyFamily: "Bulbasaur",
+buddyDistance: 3,
+baseStats: {
+attack: 151,
+defense: 143,
+hp: 155
+},
+fastMoves: ["VineWhip", "RazorLeaf"],
+chargedMoves: ["SolarBeam"]
+},
+
+Venusaur: {
+dex: 3,
+name: "Venusaur",
+category: "A",
+description: "A",
+type: ["Grass", "Poison"],
+evolvesFrom: "Ivysaur",
+evolvesTo: null,
+evolutionCost: null,
+image: "images/venusaur.png",
+shinyImage: "images/shiny/venusaur.png",
+canBeShiny: true,
+pokemonScale: 1.6,
+rarity: "rare",
+spawnWeight: 5,
+spawnTime: ["day"],
+biomes: ["grass"],
+weatherBoost: ["sunny"],
+catchRate: 0.45,
+escapeRate: 0.45,
+fleeRate: 0.1,
+stardustReward: 500,
+candyReward: 10,
+candyFamily: "Bulbasaur",
+buddyDistance: 5,
+baseStats: {
+attack: 198,
+defense: 189,
+hp: 190
+},
+fastMoves: ["VineWhip", "RazorLeaf"],
+chargedMoves: ["FrenzyPlant","HyperBeam"]
+},
+
+Charmander: {
+dex: 4,
+name: "Charmander",
+category: "A",
+description: "A",
+type: ["Fire"],
+evolvesFrom: null,
+evolvesTo: "Charmeleon",
+evolutionCost: 25,
+image: "images/charmander.png",
+shinyImage: "images/shiny/charmander.png",
+canBeShiny: true,
+pokemonScale: 1.1,
+rarity: "common",
+spawnWeight: 35,
+spawnTime: ["day"],
+biomes: ["mountain"],
+weatherBoost: ["sunny"],
+catchRate: 0.8,
+escapeRate: 0.18,
+fleeRate: 0.02,
+stardustReward: 100,
+candyReward: 3,
+candyFamily: "Charmander",
+buddyDistance: 1,
+baseStats: {
+attack: 116,
+defense: 93,
+hp: 118
+},
+fastMoves: ["Ember", "Scratch"],
+chargedMoves: ["Flamethrower"]
+},
+
+Charmeleon: {
+dex: 5,
+name: "Charmeleon",
+category: "A",
+description: "A",
+type: ["Fire"],
+evolvesFrom: "Charmander",
+evolvesTo: "Charizard",
+evolutionCost: 100,
+image: "images/charmeleon.png",
+shinyImage: "images/shiny/charmeleon.png",
+canBeShiny: true,
+pokemonScale: 1.3,
+rarity: "uncommon",
+spawnWeight: 12,
+spawnTime: ["day"],
+biomes: ["mountain"],
+weatherBoost: ["sunny"],
+catchRate: 0.65,
+escapeRate: 0.3,
+fleeRate: 0.05,
+stardustReward: 300,
+candyReward: 5,
+candyFamily: "Charmander",
+buddyDistance: 3,
+baseStats: {
+attack: 158,
+defense: 126,
+hp: 151
+},
+fastMoves: ["FireFang", "Ember"],
+chargedMoves: ["FirePunch"]
+},
+
+Charizard: {
+dex: 6,
+name: "Charizard",
+category: "A",
+description: "A",
+type: ["Fire", "Flying"],
+evolvesFrom: "Charmeleon",
+evolvesTo: null,
+evolutionCost: null,
+image: "images/charizard.png",
+shinyImage: "images/shiny/charizard.png",
+canBeShiny: true,
+pokemonScale: 1.7,
+rarity: "rare",
+spawnWeight: 3,
+spawnTime: ["day"],
+biomes: ["mountain"],
+weatherBoost: ["sunny", "windy"],
+catchRate: 0.4,
+escapeRate: 0.45,
+fleeRate: 0.15,
+stardustReward: 600,
+candyReward: 10,
+candyFamily: "Charmander",
+buddyDistance: 5,
+baseStats: {
+attack: 223,
+defense: 173,
+hp: 186
+},
+fastMoves: ["FireSpin", "AirSlash"],
+chargedMoves: ["BlastBurn"]
+},
+
+Squirtle: {
+dex: 7,
+name: "Squirtle",
+category: "A",
+description: "A",
+type: ["Water"],
+evolvesFrom: null,
+evolvesTo: "Wartortle",
+evolutionCost: 25,
+image: "images/squirtle.png",
+shinyImage: "images/shiny/squirtle.png",
+canBeShiny: true,
+pokemonScale: 1.1,
+rarity: "common",
+spawnWeight: 35,
+spawnTime: ["day"],
+biomes: ["water"],
+weatherBoost: ["rain"],
+catchRate: 0.8,
+escapeRate: 0.18,
+fleeRate: 0.02,
+stardustReward: 100,
+candyReward: 3,
+candyFamily: "Squirtle",
+buddyDistance: 1,
+baseStats: {
+attack: 94,
+defense: 121,
+hp: 127
+},
+fastMoves: ["Bubble", "Tackle"],
+chargedMoves: ["AquaTail"]
+},
+
+Wartortle: {
+dex: 8,
+name: "Wartortle",
+category: "A",
+description: "A",
+type: ["Water"],
+evolvesFrom: "Squirtle",
+evolvesTo: "Blastoise",
+evolutionCost: 100,
+image: "images/wartortle.png",
+shinyImage: "images/shiny/wartortle.png",
+canBeShiny: true,
+pokemonScale: 1.3,
+rarity: "uncommon",
+spawnWeight: 12,
+spawnTime: ["day"],
+biomes: ["water"],
+weatherBoost: ["rain"],
+catchRate: 0.65,
+escapeRate: 0.3,
+fleeRate: 0.05,
+stardustReward: 300,
+candyReward: 5,
+candyFamily: "Squirtle",
+buddyDistance: 3,
+baseStats: {
+attack: 126,
+defense: 155,
+hp: 153
+},
+fastMoves: ["WaterGun", "Bite"],
+chargedMoves: ["HydroPump"]
+},
+
+Blastoise: {
+dex: 9,
+name: "Blastoise",
+category: "A",
+description: "A",
+type: ["Water"],
+evolvesFrom: "Wartortle",
+evolvesTo: null,
+evolutionCost: null,
+image: "images/blastoise.png",
+shinyImage: "images/shiny/blastoise.png",
+canBeShiny: true,
+pokemonScale: 1.7,
+rarity: "rare",
+spawnWeight: 3,
+spawnTime: ["day"],
+biomes: ["water"],
+weatherBoost: ["rain"],
+catchRate: 0.4,
+escapeRate: 0.45,
+fleeRate: 0.15,
+stardustReward: 600,
+candyReward: 10,
+candyFamily: "Squirtle",
+buddyDistance: 5,
+baseStats: {
+attack: 171,
+defense: 207,
+hp: 188
+},
+fastMoves: ["WaterGun", "Bite"],
+chargedMoves: ["HydroCannon"]
+},
+
+Pikachu: {
+dex: 25,
+name: "Pikachu",
+category: "A",
+description: "A",
+type: ["Electric"],
+evolvesFrom: "Pichu",
+evolvesTo: "Raichu",
+evolutionCost: 50,
+image: "images/pikachu.png",
+shinyImage: "images/shiny/pikachu.png",
+canBeShiny: true,
+pokemonScale: 1.2,
+rarity: "common",
+spawnWeight: 30,
+spawnTime: ["day"],
+biomes: ["city", "grass"],
+weatherBoost: ["rain"],
+catchRate: 0.8,
+escapeRate: 0.19,
+fleeRate: 0.01,
+stardustReward: 100,
+candyReward: 3,
+candyFamily: "Pichu",
+buddyDistance: 1,
+baseStats: {
+attack: 112,
+defense: 96,
+hp: 111
+},
+fastMoves: ["ThunderShock", "QuickAttack"],
+chargedMoves: ["WildCharge"]
+},
+Patrick: {
+dex: 999,
+name: "Patrick Nolan",
+category: "A",
+description: "A",
+type: ["Fire"],
+evolvesFrom: null,
+evolvesTo: null,
+evolutionCost: 50,
+image: "images/patrick.png",
+shinyImage: "images/shiny/patrick.png",
+canBeShiny: true,
+pokemonScale: 1.2,
+rarity: "legendary",
+spawnWeight: 30,
+spawnTime: ["day"],
+biomes: ["city", "grass"],
+weatherBoost: ["rain"],
+catchRate: 0.4,
+escapeRate: 0.5,
+fleeRate: 0.1,
+stardustReward: 100,
+candyReward: 3,
+candyFamily: "Patrick",
+buddyDistance: 1,
+baseStats: {
+attack: 150,
+defense: 150,
+hp: 150
+},
+fastMoves: ["Ember","QuickAttack"],
+chargedMoves: ["Flamethrower", "HyperBeam"]
+}
+
+};
+
+// -------- POKEMON --------
+function randomIV() {
+  return Math.floor(Math.random() * 16);
+}
+
+function updateActivePokemonUI() {
+
+  const player = getPlayerPokemon();
+  const enemy = getEnemyPokemon();
+
+  // STOP CRASH IMMEDIATELY
+  if (!player || !enemy) return;
+
+
+  document.getElementById(
+  "playerInfoName"
+).innerText =
+  player.name;
+
+document.getElementById(
+  "playerInfoCP"
+).innerText =
+  "CP " + player.cp;
+
+document.getElementById(
+  "enemyInfoCP"
+).innerText =
+  "CP " + enemy.cp;
+  
+document.getElementById(
+  "enemyInfoName"
+).innerText =
+  enemy.name;
+
+
+document.getElementById(
+  "playerInfoTypes"
+).innerText =
+  player.type
+    .map(t => typeIcons[t] || "✨")
+    .join(" ");
+
+document.getElementById(
+  "enemyInfoTypes"
+).innerText =
+  enemy.type
+    .map(t => typeIcons[t] || "✨")
+    .join(" ");
+
+  document.getElementById("playerPokemon")
+    .style.backgroundImage =
+    `url(${player.image})`;
+
+  document.getElementById("enemyPokemon")
+    .style.backgroundImage =
+    `url(${enemy.image})`;
+}
+
+function getPlayerPokemon() {
+  const p = battleState.playerTeam[battleState.activePlayerIndex];
+  if (!p) return null;
+  return p;
+}
+
+function getEnemyPokemon() {
+  const e = battleState.enemyTeam[battleState.activeEnemyIndex];
+  if (!e) return null;
+  return e;
+}
+function randomLevel() {
+
+  const roll = Math.random();
+
+  // COMMON → 70%
+  // Lv 1–15
+  if (roll < 0.70) {
+    return Math.floor(Math.random() * 15) + 1;
+  }
+
+  // RARE → 20%
+  // Lv 16–25
+  if (roll < 0.90) {
+    return Math.floor(Math.random() * 10) + 16;
+  }
+
+  // VERY RARE → 8%
+  // Lv 26–30
+  if (roll < 0.98) {
+    return Math.floor(Math.random() * 5) + 26;
+  }
+
+  // ULTRA RARE → 2%
+  // Lv 31–35
+  return Math.floor(Math.random() * 5) + 31;
+}
+
+function calculateCP(baseStats, iv, level) {
+
+  const attack =
+    baseStats.attack + iv.attack;
+
+  const defense =
+    baseStats.defense + iv.defense;
+
+  const stamina =
+    baseStats.hp + iv.stamina;
+
+  // smoother level scaling
+  const levelMultiplier =
+    0.1 + (level * 0.012);
+
+  const cp = Math.floor(
+
+    (
+      attack *
+      Math.sqrt(defense) *
+      Math.sqrt(stamina) *
+      Math.pow(levelMultiplier, 2)
+    ) / 7
+
+  );
+
+  return Math.max(10, cp);
+}
+
+function calculateBattleStats(baseStats, iv, level) {
+
+  const levelBonus =
+    1 + (level * 0.05);
+
+  return {
+
+    attack:
+      Math.floor(
+        (baseStats.attack + iv.attack)
+        * levelBonus
+      ),
+
+    defense:
+      Math.floor(
+        (baseStats.defense + iv.defense)
+        * levelBonus
+      ),
+
+    maxHP:
+      Math.floor(
+        (baseStats.hp + iv.stamina)
+        * levelBonus
+      )
+
+  };
+}
+
+function renderSwitchBar() {
+
+  const bar = document.getElementById("switchBar");
+  bar.innerHTML = "";
+
+  const maxCooldown = 3000;
+
+  battleState.playerTeam.forEach((p, i) => {
+
+    // hide active Pokémon
+    if (i === battleState.activePlayerIndex) return;
+
+    // hide fainted Pokémon
+    if (!p || p.battleStats.currentHP <= 0) return;
+
+    const box = document.createElement("div");
+    box.className = "switchIcon";
+
+    // CP TEXT
+    const cp = document.createElement("div");
+    cp.className = "switchCP";
+    cp.innerText = `CP ${p.cp}`;
+
+    // IMAGE
+    const img = document.createElement("div");
+    img.className = "switchImg";
+    img.style.backgroundImage = `url(${p.image})`;
+
+    // HP BAR
+    const hpBar = document.createElement("div");
+    hpBar.className = "switchHPBar";
+
+    const hpFill = document.createElement("div");
+    hpFill.className = "switchHPFill";
+
+    const hpPercent =
+      (p.battleStats.currentHP / p.battleStats.maxHP) * 100;
+
+    hpFill.style.width = hpPercent + "%";
+
+    hpBar.appendChild(hpFill);
+
+    // OVERLAY (COOLDOWN)
+    const overlay = document.createElement("div");
+    overlay.className = "switchOverlay";
+
+    const progress = getSwitchCooldownProgress();
+
+// invert so it "drains down"
+overlay.style.height = (progress * 100) + "%";
+
+    // CLICK SWITCH
+    box.onclick = () => {
+      if (battleState.switchCooldown > 0) return;
+      switchPlayerPokemon(i);
+    };
+
+    box.appendChild(cp);
+    box.appendChild(img);
+    box.appendChild(hpBar);
+
+    bar.appendChild(box);
+    box.appendChild(overlay);
+  });
+}
+
+function updateEvolveButton(){
+
+const btn=document.getElementById("evolveRow");
+
+if(!selectedPokemon)return;
+
+const next=selectedPokemon.evolvesTo;
+
+const cost=selectedPokemon.evolutionCost;
+
+const candyFam=selectedPokemon.candyFam;
+
+const candy=candyBag[candyFam]||0;
+
+// ❌ NO EVOLUTION
+if(!next || !cost){
+btn.style.display="none";
+return;
+}
+
+// ✅ SHOW BUTTON
+btn.style.display="block";
+
+// ❌ NOT ENOUGH CANDY
+if(candy<cost){
+btn.disabled=true;
+btn.style.opacity=0.4;
+btn.style.filter="grayscale(1)";
+}else{
+btn.disabled=false;
+btn.style.opacity=1;
+btn.style.filter="none";
+}
+
+}
+
+function playEvolutionAnimation(oldPokemon, newPokemon, onComplete) {
+
+  const scene = document.getElementById("evoScene");
+const evoName =
+  document.getElementById("evoName");
+  const oldImg =
+    document.getElementById("evoOld");
+
+  const newImg =
+    document.getElementById("evoNew");
+
+  scene.classList.remove("hidden");
+
+  oldImg.src = oldPokemon.image;
+  newImg.src = newPokemon.image;
+
+  // initial state
+  oldImg.style.opacity = "1";
+  newImg.style.opacity = "0";
+
+  oldImg.style.filter = "brightness(1)";
+  newImg.style.filter = "brightness(1)";
+
+  oldImg.style.transform =
+    "translateY(40px)";
+
+  newImg.style.transform =
+    "translateY(-80px)";
+
+  // =========================
+  // 1. OLD POKEMON WOBBLE
+  // =========================
+evoName.textContent = oldPokemon.name;
+evoName.style.opacity = "1";
+  let wobbleCount = 0;
+
+  const wobbleInterval = setInterval(() => {
+
+    oldImg.style.transform =
+      `translateY(40px)
+       rotate(${wobbleCount % 2 === 0 ? 4 : -4}deg)`;
+
+    wobbleCount++;
+
+    if (wobbleCount > 6) {
+
+      clearInterval(wobbleInterval);
+evoName.style.opacity = "0";
+      oldImg.style.transform =
+        "translateY(40px) rotate(0deg)";
+
+      riseUp();
+    }
+
+  }, 120);
+
+  // =========================
+  // 2. MOVE UPWARD
+  // =========================
+
+  function riseUp() {
+
+    oldImg.style.transition =
+      "transform 1.2s ease";
+
+    oldImg.style.transform =
+      "translateY(-80px) scale(1.05)";
+      
+
+    setTimeout(() => {
+      blinkSequence();
+    }, 1200);
+  }
+
+  // =========================
+  // 3. BLINK OLD/NEW
+  // =========================
+
+  function blinkSequence() {
+
+    let blink = 0;
+
+    const blinkInterval = setInterval(() => {
+
+      const showOld =
+        blink % 2 === 0;
+
+      oldImg.style.opacity =
+        showOld ? "1" : "0";
+
+      newImg.style.opacity =
+        showOld ? "0" : "1";
+
+      // both bright
+      oldImg.style.filter =
+        "brightness(50)";
+
+      newImg.style.filter =
+        "brightness(50)";
+
+      blink++;
+
+      if (blink > 14) {
+
+        clearInterval(blinkInterval);
+
+        oldImg.style.opacity = "0";
+        newImg.style.opacity = "1";
+        
+
+        descendDown();
+      }
+
+    }, 180);
+  }
+
+  // =========================
+  // 4. NEW POKEMON DOWNWARD
+  // =========================
+
+  function descendDown() {
+
+    newImg.style.transition =
+  "transform 1s ease, filter 0.5s ease";
+
+newImg.style.transform =
+  "translateY(40px) scale(1.05)";
+
+newImg.style.filter =
+  "brightness(1)";
+    setTimeout(() => {
+    
+    evoName.textContent = newPokemon.name;
+evoName.style.opacity = "1";
+    }, 2000);
+    
+    setTimeout(() => {
+    finalWobble();
+    }, 3000);
+    
+  }
+
+  // =========================
+  // 5. FINAL WOBBLE
+  // =========================
+
+  function finalWobble() {
+
+  let wobbleCount = 0;
+
+  const wobbleInterval = setInterval(() => {
+
+    newImg.style.transform =
+  `translateY(40px)
+   scale(1.05)
+   rotate(${wobbleCount % 2 === 0 ? 4 : -4}deg)`;
+   
+    wobbleCount++;
+console.log(wobbleCount);
+    if (wobbleCount > 6) {
+
+      clearInterval(wobbleInterval);
+
+      newImg.style.transform =
+  "translateY(40px) scale(1.05) rotate(0deg)";
+      
+      idleFinish();
+    }
+
+  }, 120);
+}
+
+  // =========================
+  // 6. IDLE
+  // =========================
+
+  function idleFinish() {
+newImg.style.transition =
+
+      "transform 2s ease";
+
+    newImg.style.transform =
+      "translateY(-80px) scale(1.05)";
+      evoName.style.opacity = "0";
+    setTimeout(() => {
+
+      scene.classList.add("hidden");
+
+      onComplete();
+    }, 2000);
+  }
+}
+
+
+function evolvePokemon() {
+
+  if (!selectedPokemon) return;
+
+  const nextName = selectedPokemon.evolvesTo;
+
+  if (!nextName) {
+    showCatchMessage("This Pokémon cannot evolve!");
+    return;
+  }
+
+  const cost = selectedPokemon.evolutionCost || 0;
+
+  const candy =
+    candyBag[selectedPokemon.candyFam] || 0;
+
+  if (candy < cost) {
+    showCatchMessage("Not enough candy!");
+    return;
+  }
+
+  const oldPokemon = { ...selectedPokemon };
+  const newData = POKEDEX[nextName];
+
+  playEvolutionAnimation(oldPokemon, newData, () => {
+
+    // 💥 ONLY NOW apply evolution
+
+    candyBag[selectedPokemon.candyFam] -= cost;
+
+    Object.assign(selectedPokemon, newData);
+
+    const stats = calculateBattleStats(
+      selectedPokemon.baseStats,
+      selectedPokemon.iv,
+      selectedPokemon.level
+    );
+
+    selectedPokemon.battleStats = {
+      ...stats,
+      currentHP: stats.maxHP,
+      energy: 0
+    };
+
+    selectedPokemon.cp = calculateCP(
+      selectedPokemon.baseStats,
+      selectedPokemon.iv,
+      selectedPokemon.level
+    );
+
+    renderStorage();
+    showPokemonInfo(selectedPokemon);
+
+    showCatchMessage(`Evolved to ${selectedPokemon.name}!`);
+  });
+}
+
+function powerUpPokemon() {
+
+  const p = viewingPokemon;
+
+  if (!p) return;
+
+  const base = POKEDEX[p.name].baseStats;
+
+  if (p.level >= 50) {
+    alert("Max Level!");
+    return;
+  }
+
+  const cost = getPowerUpCost(p.level);
+
+  if (stardust < cost) {
+    alert("Not enough Stardust!");
+    return;
+  }
+
+  stardust -= cost;
+
+  p.level++;
+
+  // CP recalculation
+  p.cp = calculateCP(base, p.iv, p.level);
+
+  // ALWAYS rebuild stats safely
+  const stats = calculateBattleStats(base, p.iv, p.level);
+
+  p.battleStats = {
+    attack: stats.attack,
+    defense: stats.defense,
+    maxHP: stats.maxHP,
+    currentHP: stats.maxHP
+  };
+
+  showPokemonInfo(p);
+  renderStorage();
+}
+
+function createPokemon(){
+
+const names=Object.keys(POKEDEX);
+const name=names[Math.floor(Math.random()*names.length)];
+const base=POKEDEX[name];
+
+const iv={
+attack:randomIV(),
+defense:randomIV(),
+stamina:randomIV()
+};
+
+const level=randomLevel();
+
+const angle=Math.random()*Math.PI*2;
+
+const isOutside=Math.random()<0.7;
+
+const distance=isOutside
+?120+Math.random()*150
+:Math.random()*80;
+
+const stats=calculateBattleStats(
+base.baseStats,
+iv,
+level
+);
+
+return{
+
+id:Math.random(),
+name:base.name,
+dex:base.dex,
+
+type:[...base.type],
+
+image:base.image,
+shinyImage:base.shinyImage,
+
+catchRate:base.catchRate,
+escapeRate:base.escapeRate,
+fleeRate:base.fleeRate,
+
+candyReward:base.candyReward,
+candyFam:base.candyFamily,
+stardustReward:base.stardustReward,
+
+pokemonScale:base.pokemonScale,
+rarity:base.rarity,
+
+evolvesTo:base.evolvesTo,
+evolutionCost:base.evolutionCost,
+
+baseStats:base.baseStats,
+
+iv:iv,
+level:level,
+
+cp:calculateCP(
+base.baseStats,
+iv,
+level
+),
+
+battleStats:{
+
+...stats,
+
+currentHP:stats.maxHP,
+energy:0,
+cooldown:0
+
+},
+
+moves:{
+
+fast:base.fastMoves[
+Math.floor(
+Math.random()*base.fastMoves.length
+)],
+
+charged:base.chargedMoves[
+Math.floor(
+Math.random()*base.chargedMoves.length
+)]
+
+},
+
+x:player.x+Math.cos(angle)*distance,
+y:player.y+Math.sin(angle)*distance
+
+};
+
+}
+
+// -------- SPAWN --------
+function initialSpawn() {
+  const count = 30; // starting density (adjust later)
+
+  for (let i = 0; i < count; i++) {
+    spawnOnePokemon(true);
+  }
+}
+
+function getVisiblePokemon() {
+  return overworldPokemon.filter(p => {
+    const dx = p.x - player.x;
+    const dy = p.y - player.y;
+    return dx * dx + dy * dy < 500 * 500;
+  });
+}
+
+function spawnOnePokemon() {
+
+  // SPAWN CAP
+  if (overworldPokemon.length >= MAX_POKEMON) return;
+
+  const p = createPokemon();
+
+  const angle = Math.random() * Math.PI * 2;
+
+  // --- MIXED SPAWN SYSTEM ---
+  const roll = Math.random();
+
+  let radius;
+
+  if (roll < 0.55) {
+    // NEAR PLAYER SPAWN
+    radius = 250 + Math.random() * 400;
+  } else {
+    // WIDE WORLD SPAWN
+    radius = 600 + Math.random() * 1400;
+  }
+
+  // soften clustering randomness
+  radius *= 0.8 + Math.random() * 0.4;
+
+  // --- POSITION (WORLD SPACE) ---
+  let x = player.x + Math.cos(angle) * radius;
+  let y = player.y + Math.sin(angle) * radius;
+
+  // --- WORLD BOUNDS (3000x3000 centered-safe) ---
+  const min = 50;
+  const max = 2950;
+
+  x = Math.max(min, Math.min(max, x));
+  y = Math.max(min, Math.min(max, y));
+
+  // --- ANTI-CLUMP (PREVENT STACKING) ---
+  const tooClose = overworldPokemon.some(other => {
+    const dx = other.x - x;
+    const dy = other.y - y;
+    return Math.sqrt(dx * dx + dy * dy) < 80;
+  });
+
+  if (tooClose) return;
+
+  p.x = x;
+  p.y = y;
+
+  // --- RARITY SYSTEM ---
+  const rollRarity = Math.random();
+
+  if (rollRarity < 0.05) {
+    p.rarity = "rare";
+  } else if (rollRarity < 0.25) {
+    p.rarity = "uncommon";
+  } else {
+    p.rarity = "common";
+  }
+
+  // --- DESPAWN TIMER ---
+  const lifetime =
+    MIN_DESPAWN_TIME +
+    Math.random() * (MAX_DESPAWN_TIME - MIN_DESPAWN_TIME);
+
+  p.despawnAt = Date.now() + lifetime;
+
+  overworldPokemon.push(p);
+}
+
+function updatePokemonDespawn() {
+
+  const now = Date.now();
+
+  overworldPokemon = overworldPokemon.filter(p => {
+
+    const alive = p.despawnAt > now;
+
+    // REMOVE DOM + CACHE WHEN DESPAWNED
+    if (!alive) {
+
+      const el = pokemonEls.get(p.id);
+
+      if (el) {
+        el.remove();
+      }
+
+      pokemonEls.delete(p.id);
+
+    }
+
+    return alive;
+
+  });
+
+}
+
+// -------- RENDER --------
+function startEncounter(p) {
+cameraLocked = true;
+  currentPokemon = p;
+document.querySelector(".player")
+  .style.opacity = "0";
+
+const radius =
+  document.querySelector(".radius");
+
+radius.style.animation = "none";
+radius.style.opacity = "0";
+  
+  const world = document.getElementById("world");
+  const flash = document.getElementById("flash");
+
+  const zoomScale = 2.2;
+
+world.style.transition =
+  "transform 0.8s ease";
+
+/* direct camera to pokemon */
+const cameraX =
+  (p.x * zoomScale) - (window.innerWidth / 2);
+
+const cameraY =
+  (p.y * zoomScale) - (window.innerHeight * 0.38);
+
+world.style.transform =
+  `
+  translate(${-cameraX}px, ${-cameraY}px)
+  scale(${zoomScale})
+  `;
+  
+  // flash
+  setTimeout(() => {
+    flash.style.opacity = "1";
+  }, 300);
+
+  // switch screen
+  setTimeout(() => {
+
+    flash.style.opacity = "0";
+    const titl = document.getElementById("pokeTitle");
+  
+    const box = document.getElementById("pokeBox");
+    box.style.backgroundImage = "";
+    box.style.background = "";
+    box.style.opacity = 1;
+titl.style.opacity = "1";
+box.style.opacity=1;
+box.style.transform="translateX(0px)";
+titl.style.opacity=1;
+titl.style.transform="";
+    showScreen("catchScreen");
+    resetCatchUI();
+console.log(
+p.name,
+p.catchRate,
+p.escapeRate,
+p.fleeRate,
+p.iv,
+p.level,
+p.moves.fast,
+p.moves.charged,
+p.candyFam,
+);
+
+    document.getElementById("pokeTitle").innerText =
+      `${p.name} / CP ${p.cp}`;
+
+    if (p.image) {
+      box.style.backgroundImage = `url(${p.image})`;
+      box.style.backgroundSize = "cover";
+      box.style.backgroundPosition = "center";
+    } else {
+      box.style.background = p.color;
+    }
+
+    showEncounterText(p.name);
+
+  }, 1000);
+
+  // reset world zoom
+  setTimeout(() => {
+
+  world.style.transition = "";
+
+  cameraLocked = false;
+
+  updateCamera(1);
+
+}, 1200);
+}
+
+function showEncounterText(name) {
+
+  const text =
+    document.getElementById("encounterText");
+
+  text.innerText =
+    `A wild ${name} appeared!`;
+
+  text.style.opacity = "1";
+  text.style.transform =
+    "translateX(-50%) translateY(0px)";
+
+  setTimeout(() => {
+
+    text.style.opacity = "0";
+
+    text.style.transform =
+      "translateX(-50%) translateY(-20px)";
+
+  }, 2000);
+}
+
+function renderPokemon() {
+
+  const world = document.getElementById("world");
+
+  getVisiblePokemon().forEach(p => {
+
+    let el = pokemonEls.get(p.id);
+
+    // CREATE ONLY ONCE
+    if (!el) {
+      el = document.createElement("div");
+      el.className = "pokemon";
+
+      world.appendChild(el);
+      pokemonEls.set(p.id, el);
+
+      // click only set once
+      el.onclick = () => {
+        const dx = p.x - player.x;
+        const dy = p.y - player.y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance <= 150) {
+          startEncounter(p);
+        }
+      };
+    }
+
+    // UPDATE POSITION EVERY FRAME
+    el.style.left = p.x + "px";
+    el.style.top = p.y + "px";
+
+    // VISUAL UPDATE
+    if (p.image) {
+      el.style.backgroundImage = `url(${p.image})`;
+      el.style.backgroundSize = "cover";
+      el.style.backgroundPosition = "center";
+    } else {
+      el.style.background = p.color;
+
+      if (p.shape === "circle") el.style.borderRadius = "50%";
+      else if (p.shape === "rounded") el.style.borderRadius = "10px";
+      else el.style.borderRadius = "0";
+    }
+
+    // DISTANCE EFFECT (light/dark)
+    const dx = p.x - player.x;
+    const dy = p.y - player.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    el.classList.remove("far", "near");
+
+if (distance < 150) {
+
+  el.classList.remove("far");
+  el.classList.add("near");
+
+} else {
+
+  el.classList.remove("near");
+  el.classList.add("far");
+
+}
+
+  });
+}
+
+function fadeToBlack(callback) {
+
+  const fade = document.getElementById("battleFade");
+
+  fade.style.opacity = "1";
+
+  setTimeout(() => {
+    if (callback) callback();
+  }, 600);
+}
+
+function removePokemon(id) {
+  const el = pokemonEls.get(id);
+  if (el) {
+    el.remove();
+    pokemonEls.delete(id);
+  }
+}
+
+// -------- JOYSTICK --------
+let joystick = document.getElementById("joystick");
+let stick = document.getElementById("stick");
+let move = { x: 0, y: 0 };
+
+joystick.addEventListener("touchmove", e => {
+  const rect = joystick.getBoundingClientRect();
+  const x = e.touches[0].clientX - rect.left - 50;
+  const y = e.touches[0].clientY - rect.top - 50;
+
+  move.x = x / 50;
+  move.y = y / 50;
+
+const length = Math.sqrt(move.x * move.x + move.y * move.y);
+
+if (length > 1) {
+  move.x /= length;
+  move.y /= length;
+}
+
+  stick.style.left = (30 + move.x * 20) + "px";
+  stick.style.top = (30 + move.y * 20) + "px";
+});
+
+joystick.addEventListener("touchend", () => {
+  move = { x: 0, y: 0 };
+  stick.style.left = "30px";
+  stick.style.top = "30px";
+});
+
+function updateCamera(scale = 1) {
+  const world = document.getElementById("world");
+
+  const cameraX = player.x - window.innerWidth / 2;
+  const cameraY = player.y - window.innerHeight / 2;
+
+  world.style.transform =
+    `translate(${-cameraX}px, ${-cameraY}px) scale(${scale})`;
+
+  world.style.transformOrigin = "top left";
+}
+
+// ------ BATTLE SYSTEM ------
+
+function startBattle(playerTeam) {
+
+  battleState.active = true;
+  battleState.battleStarted = false;
+
+  // ===== PLAYER TEAM =====
+  battleState.playerTeam = playerTeam.map(p => {
+    return JSON.parse(JSON.stringify(p));
+  });
+
+  battleState.activePlayerIndex = 0;
+
+  // reset battle stats ONLY for safety
+  battleState.playerTeam.forEach(p => {
+    p.battleStats.currentHP = p.battleStats.maxHP;
+    p.battleStats.energy = 0;
+    p.battleStats.cooldown = 0;
+  });
+
+  // ===== ENEMY TEAM =====
+  battleState.enemyTeam = [];
+
+  const playerLevel =
+    battleState.playerTeam[0].level;
+
+  for (let i = 0; i < 3; i++) {
+
+    const enemy = createPokemon();
+
+    const enemyLevel =
+      Math.max(
+        1,
+        Math.min(
+          50,
+          playerLevel + Math.floor(Math.random() * 11 - 5)
+        )
+      );
+
+    enemy.level = enemyLevel;
+
+    enemy.cp = calculateCP(
+      enemy.baseStats,
+      enemy.iv,
+      enemy.level
+    );
+
+    enemy.battleStats =
+      calculateBattleStats(
+        enemy.baseStats,
+        enemy.iv,
+        enemy.level
+      );
+
+    enemy.battleStats.currentHP =
+      enemy.battleStats.maxHP;
+
+    enemy.battleStats.energy = 0;
+    enemy.battleStats.cooldown = 0;
+
+    battleState.enemyTeam.push(
+      JSON.parse(JSON.stringify(enemy))
+    );
+  }
+
+  battleState.activeEnemyIndex = 0;
+
+  battleState.playerCooldown = 0;
+  battleState.enemyCooldown = 0;
+  battleState.enemyAI = 0;
+
+  const player = getPlayerPokemon();
+  const enemy = getEnemyPokemon();
+
+  updateBattleUI();
+
+  document.getElementById("playerPokemon")
+    .style.backgroundImage = `url(${player.image})`;
+
+  document.getElementById("enemyPokemon")
+    .style.backgroundImage = `url(${enemy.image})`;
+
+  showScreen("battleScreen");
+updateActivePokemonUI()
+  showBattleText("3");
+
+  setTimeout(() => showBattleText("2"), 700);
+  setTimeout(() => showBattleText("1"), 1400);
+
+  setTimeout(() => {
+    showBattleText("GO!");
+    battleState.battleStarted = true;
+  }, 2100);
+
+  renderSwitchBar();
+}
+
+function switchPlayerPokemon(index) {
+
+  if (battleState.switchCooldown > 0) return;
+
+  const target = battleState.playerTeam[index];
+  if (!target) return;
+
+  if (target.battleStats.currentHP <= 0) return;
+
+  if (index === battleState.activePlayerIndex) return;
+
+  battleState.activePlayerIndex = index;
+  battleState.switchCooldown = 15000;
+renderSwitchBar();
+  updateBattleUI();
+  updateActivePokemonUI();
+}
+
+function getSwitchCooldownProgress() {
+  const max = 15000; // same as your cooldown
+  return Math.max(0, battleState.switchCooldown / max);
+}
+
+function autoSwitchPlayer() {
+
+  const nextIndex =
+    battleState.playerTeam.findIndex(
+      p => p.battleStats.currentHP > 0
+    );
+
+  if (nextIndex === -1) {
+    endBattle("lose");
+    return;
+  }
+
+  battleState.activePlayerIndex = nextIndex;
+renderSwitchBar();
+  updateBattleUI();
+}
+
+function showBattleText(text) {
+
+  const el =
+    document.getElementById("battleText");
+
+  el.innerText = text;
+
+  el.style.opacity = "1";
+
+  setTimeout(() => {
+    el.style.opacity = "0";
+  }, 500);
+}
+
+function dealDamage(attacker, defender, move) {
+
+  if (!attacker || !defender) return;
+
+  const atk = attacker.battleStats.attack;
+  const def = defender.battleStats.defense;
+
+  let damage =
+    (atk + move.damage - def * 0.3) * 0.08;
+
+  damage = Math.max(1, Math.floor(damage));
+
+  defender.battleStats.currentHP -= damage;
+
+  if (defender.battleStats.currentHP <= 0) {
+
+    defender.battleStats.currentHP = 0;
+
+    // MARK FAINT FIRST
+    const isPlayer = (defender === getPlayerPokemon());
+
+    checkBattleEnd(); // 🔥 IMPORTANT FIRST
+
+    if (battleState.active === false) return;
+
+    if (isPlayer) {
+      autoSwitchPlayer();
+    } else {
+      autoSwitchEnemy();
+    }
+
+    // SAFE UI UPDATE AFTER STATE IS STABLE
+    updateBattleUI();
+    updateActivePokemonUI();
+
+    return;
+  }
+
+  // normal mid-battle update
+  updateBattleUI();
+}
+
+function autoSwitchEnemy() {
+
+  const nextIndex =
+    battleState.enemyTeam.findIndex(
+      p => p.battleStats.currentHP > 0
+    );
+
+  if (nextIndex === -1) {
+
+    endBattle("win");
+    return;
+  }
+
+  battleState.activeEnemyIndex = nextIndex;
+renderSwitchBar();
+  updateBattleUI();
+
+  // ONLY CALL IF STILL VALID
+  const enemy = getEnemyPokemon();
+  if (enemy) updateActivePokemonUI();
+}
+
+function playerFastAttack() {
+
+  if (!battleState.active) return;
+
+if (!battleState.battleStarted) return;
+
+  if (battleState.playerCooldown > 0) return;
+
+  const player = getPlayerPokemon();
+  const enemy = getEnemyPokemon();
+
+  const move =
+    MOVES[player.moves.fast];
+
+  dealDamage(player, enemy, move);
+
+  player.battleStats.energy +=
+    move.energyGain;
+
+  if (player.battleStats.energy > 100) {
+    player.battleStats.energy = 100;
+  }
+
+  battleState.playerCooldown =
+    move.cooldown;
+
+  updateBattleUI();
+
+  checkBattleEnd();
+}
+
+function endBattle(result) {
+
+  battleState.active = false;
+  battleState.battleStarted = false;
+
+  if (result === "win") {
+    showBattleText("YOU WIN!");
+  }
+
+  if (result === "lose") {
+    showBattleText("YOU LOSE!");
+  }
+
+  // ⏳ GIVE TIME FOR TEXT TO BE SEEN
+  setTimeout(() => {
+
+    fadeToBlack(() => {
+
+      setTimeout(() => {
+
+        showScreen("battlePartyScreen");
+
+        // reset fade
+        document.getElementById("battleFade").style.opacity = "0";
+
+      }, 200);
+
+    });
+
+  }, 1200); // <- IMPORTANT: text display time
+}
+
+function enemyAttack() {
+
+  const player = getPlayerPokemon();
+const enemy = getEnemyPokemon();
+
+if (!player || !enemy) return;
+
+  const move =
+    MOVES[enemy.moves.fast];
+
+  dealDamage(enemy, player, move);
+
+  enemy.battleStats.energy +=
+    move.energyGain;
+
+  if (enemy.battleStats.energy > 100) {
+    enemy.battleStats.energy = 100;
+  }
+
+  battleState.enemyCooldown =
+    move.cooldown;
+
+  updateBattleUI();
+
+  checkBattleEnd();
+}
+
+function useChargedMove() {
+
+  if (!battleState.active) return;
+
+if (!battleState.battleStarted) return;
+
+  const player = getPlayerPokemon();
+  const enemy = getEnemyPokemon();
+
+  const move =
+    MOVES[player.moves.charged];
+
+  if (
+    player.battleStats.energy <
+    move.energyCost
+  ) return;
+
+  player.battleStats.energy -=
+    move.energyCost;
+
+  dealDamage(player, enemy, move);
+
+  showBattleText(move.type.toUpperCase() + "!");
+
+  updateBattleUI();
+
+  checkBattleEnd();
+}
+
+function updateBattleUI() {
+
+  const player = getPlayerPokemon();
+const enemy = getEnemyPokemon();
+
+if (!player || !enemy) return;
+
+  const playerHP =
+    player.battleStats.currentHP /
+    player.battleStats.maxHP * 100;
+
+  const enemyHP =
+    enemy.battleStats.currentHP /
+    enemy.battleStats.maxHP * 100;
+
+  document.getElementById("playerHP")
+    .style.width = playerHP + "%";
+
+  document.getElementById("enemyHP")
+    .style.width = enemyHP + "%";
+
+  
+
+  const btn =
+    document.getElementById("chargedBtn");
+    
+
+  const chargedMove =
+    MOVES[player.moves.charged];
+    const moveType =
+  chargedMove.type;
+
+const colors =
+  typeColors[moveType] ||
+  typeColors.Default;
+
+const icon =
+  typeIcons[moveType] || "✨";
+
+document.getElementById("chargedIcon")
+  .innerText = icon;
+
+document.getElementById("chargedMoveName")
+  .innerText =
+  player.moves.charged;
+
+btn.style.setProperty(
+  "--chargeGradient",
+  `linear-gradient(
+    180deg,
+    ${colors[0]},
+    ${colors[1]}
+  )`
+);
+    const energy =
+  player.battleStats.energy;
+
+const cost =
+  chargedMove.energyCost;
+
+const mainPercent =
+  Math.min(
+    100,
+    (energy / cost) * 100
+  );
+
+const overflowEnergy =
+  Math.max(0, energy - cost);
+
+const overflowPercent =
+  Math.min(
+    100,
+    (overflowEnergy / cost) * 100
+  );
+
+btn.style.setProperty(
+  "--chargePercent",
+  mainPercent + "%"
+);
+
+btn.style.setProperty(
+  "--overflowPercent",
+  overflowPercent + "%"
+);
+
+  if (
+    player.battleStats.energy >=
+    chargedMove.energyCost
+  ) {
+    btn.classList.add("ready");
+  } else {
+    btn.classList.remove("ready");
+  }
+}
+
+function checkBattleEnd() {
+
+  const playerAlive =
+    battleState.playerTeam.some(
+      p => p.battleStats.currentHP > 0
+    );
+
+  const enemyAlive =
+    battleState.enemyTeam.some(
+      p => p.battleStats.currentHP > 0
+    );
+
+  if (!enemyAlive) {
+    endBattle("win");
+  }
+
+  if (!playerAlive) {
+    endBattle("lose");
+  }
+}
+
+function updateBattle(delta) {
+
+  if (!battleState.active) return;
+
+if (!battleState.battleStarted) return;
+
+  if (battleState.playerCooldown > 0) {
+    battleState.playerCooldown -= delta;
+  }
+
+  if (battleState.enemyCooldown > 0) {
+    battleState.enemyCooldown -= delta;
+  }
+
+  battleState.enemyAI += delta;
+
+  if (
+    battleState.enemyAI >= 700 &&
+    battleState.enemyCooldown <= 0
+  ) {
+
+    enemyAttack();
+
+    battleState.enemyAI = 0;
+  }
+}
+
+// -------- GAME LOOP --------
+let lastFrame = performance.now();
+let lastUpdate = 0;
+function gameLoop(now) {
+
+  const delta = now - lastFrame;
+
+  lastFrame = now;
+  // Slower movement
+const speed = 1;
+
+player.x += move.x * speed;
+player.y += move.y * speed;
+
+/* update facing direction */
+/* prioritize strongest movement axis */
+if (Math.abs(move.y) > Math.abs(move.x)) {
+
+  if (move.y > 0) {
+    player.direction = "down";
+  }
+
+  else if (move.y < 0) {
+    player.direction = "up";
+  }
+
+} else {
+
+  if (move.x > 0) {
+    player.direction = "right";
+  }
+
+  else if (move.x < 0) {
+    player.direction = "left";
+  }
+
+}
+
+updatePlayerSprite();
+if (!cameraLocked) {
+  updateCamera();
+}
+player.x = Math.max(0, Math.min(3000, player.x));
+player.y = Math.max(0, Math.min(3000, player.y));
+// Calculate distance walked
+const dx = player.x - lastPlayerPos.x;
+const dy = player.y - lastPlayerPos.y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+
+distanceWalked += dist;
+
+// Update last position
+lastPlayerPos.x = player.x;
+lastPlayerPos.y = player.y;
+
+// Spawn check
+if (distanceWalked >= SPAWN_DISTANCE) {
+ spawnOnePokemon();
+  distanceWalked = 0;
+}
+
+
+    updatePokemonDespawn();
+    maintainSpawn();
+    
+if (battleState.switchCooldown > 0) {
+  battleState.switchCooldown -= delta;
+  renderSwitchBar();
+}
+
+
+if (battleState.switchCooldown > 0) {
+  battleState.switchCooldown -= delta;
+
+  if (battleState.switchCooldown < 0) {
+    battleState.switchCooldown = 0;
+  }
+}
+updateBattle(delta);
+updateBall();
+renderPokemon();
+requestAnimationFrame(gameLoop);
+}
+
+function maintainSpawn() {
+  const missing = MAX_POKEMON - overworldPokemon.length;
+
+  for (let i = 0; i < missing; i++) {
+    if (Math.random() < 0.5) {
+     spawnOnePokemon(false);
+    }
+  }
+}
+
+// -------- POWER UP --------
+
+function getPowerUpCost(level) {
+
+  return Math.floor(
+
+    100 +
+
+    (level * level * 8)
+
+  );
+
+}
+
+// -------- STORAGE --------
+
+
+function renderStorage() {
+  const list = document.getElementById("storageList");
+  list.innerHTML = "";
+
+  const sortType = document.getElementById("sortSelect").value;
+  const filterType = document.getElementById("filterType").value;
+
+  let displayList = [...storage];
+
+  // -------- FILTER --------
+  if (filterType !== "all") {
+    displayList = displayList.filter(p => p.type.includes(filterType));
+  }
+
+  // -------- SORT --------
+  if (sortType === "dexAsc") {
+    displayList.sort((a, b) => a.dex - b.dex);
+  } else if (sortType === "dexDesc") {
+    displayList.sort((a, b) => b.dex - a.dex);
+  } else if (sortType === "cpDesc") {
+    displayList.sort((a, b) => b.cp - a.cp);
+  } else if (sortType === "cpAsc") {
+    displayList.sort((a, b) => a.cp - b.cp);
+  } else if (sortType === "newest") {
+    displayList.reverse();
+  }
+
+  // -------- RENDER --------
+  displayList.forEach(p => {
+
+    const div = document.createElement("div");
+    div.className = "pokeCard";
+
+    const cp = document.createElement("div");
+    cp.innerText = `CP ${p.cp}`;
+    cp.style.textAlign = "center";
+    cp.style.width = "100%";
+    cp.style.fontWeight = "bold";
+    cp.style.marginBottom = "4px";
+
+    const img = document.createElement("div");
+    img.className = "pokeImg";
+
+    if (p.image) {
+      img.style.backgroundImage = `url(${p.image})`;
+      img.style.backgroundSize = "cover";
+      img.style.backgroundPosition = "center";
+    } else {
+      img.style.background = p.color;
+
+      if (p.shape === "circle") img.style.borderRadius = "50%";
+      else if (p.shape === "rounded") img.style.borderRadius = "10px";
+    }
+
+    const name = document.createElement("div");
+    name.innerText = p.name;
+    name.style.textAlign = "center";
+    name.style.width = "100%";
+
+    div.appendChild(cp);
+    div.appendChild(img);
+    div.appendChild(name);
+
+    // -------- CLICK LOGIC (FIXED SWAP SYSTEM) --------
+    div.onclick = () => {
+
+      // BATTLE SELECTION MODE
+      if (choosingBattlePokemon) {
+
+        const currentIndex = currentBattleSlot;
+
+        const existingIndex =
+          selectedBattleParty.findIndex(x => x && x.id === p.id);
+
+        // CASE 1: Pokémon NOT in party → place into slot
+        if (existingIndex === -1) {
+
+          selectedBattleParty[currentIndex] = p;
+
+        }
+
+        // CASE 2: Pokémon already in party → SWAP slots
+        else {
+
+          const temp =
+            selectedBattleParty[currentIndex];
+
+          selectedBattleParty[currentIndex] =
+            selectedBattleParty[existingIndex];
+
+          selectedBattleParty[existingIndex] =
+            temp;
+        }
+
+        updateBattlePartyUI();
+
+        choosingBattlePokemon = false;
+
+        showScreen("battlePartyScreen");
+
+        return;
+      }
+
+      // NORMAL MODE
+      showPokemonInfo(p);
+    };
+
+    list.appendChild(div);
+  });
+}
+
+// -------  POKEMON INFO SCREEN ------
+function showPokemonInfo(p) {
+viewingPokemon = p;
+selectedPokemon = p;
+updateEvolveButton();
+  document.getElementById("cpText").innerText =
+    "CP " + p.cp;
+
+  document.getElementById("infoName").innerText =
+  `${p.name} • Lv ${p.level}`;
+
+document.getElementById("powerUpCost")
+  .innerText =
+  `✨ ${getPowerUpCost(p.level).toLocaleString()}`;
+
+  // HP
+  const hp =
+    p.battleStats.maxHP;
+
+  document.getElementById("hpText").innerText =
+    `${hp} / ${hp} HP`;
+
+  // TYPES
+  const typesDiv =
+    document.getElementById("infoTypes");
+
+  const types =
+    Array.isArray(p.type)
+    ? p.type
+    : [p.type];
+
+  typesDiv.innerHTML =
+  types.map(t => {
+
+    const icon =
+      typeIcons[t] || "✨";
+
+    const colors =
+      typeColors[t] || typeColors.Default;
+
+    return `
+  <div class="typeBadge">
+
+    <div
+      class="typeIcon"
+      style="
+        background: linear-gradient(
+          135deg,
+          ${colors[0]},
+          ${colors[1]}
+        );
+      "
+    >
+      ${icon}
+    </div>
+
+    <div class="typeText">
+      ${t}
+    </div>
+
+  </div>
+`;
+  }).join("");
+
+  // IV
+  
+const ivPercent =
+  Math.floor(
+    (
+      (
+        p.iv.attack +
+        p.iv.defense +
+        p.iv.stamina
+      ) / 45
+    ) * 100
+  );
+document.getElementById("ivPercentText").innerText =
+    `${p.iv.attack}/${p.iv.defense}/${p.iv.stamina}`;
+    
+    document.getElementById("ivLabel").innerText =
+    `IV (${ivPercent}%)`;
+    
+    // CANDY
+    
+    const candyCount=
+candyBag[p.candyFam] || 0;
+
+document.getElementById("infoCandy")
+.innerText=
+`🍬 ${candyCount}`;
+
+document.getElementById("infoCandyFamily")
+.innerText=
+`${p.candyFam} Candy`;
+
+document.getElementById("evolveCost")
+  .innerText =
+  `🍬 ${p.evolutionCost}`;
+
+  // MOVES
+  const fastMove =
+MOVES[p.moves?.fast] ||
+MOVES["Tackle"];
+
+const chargedMove =
+MOVES[p.moves?.charged] ||
+MOVES["HyperBeam"];
+
+const fastType =
+fastMove?.type || "Normal";
+
+const chargedType =
+chargedMove?.type || "Normal";
+
+const fastColors =
+typeColors[fastType] || typeColors.Default;
+
+const chargedColors =
+typeColors[chargedType] || typeColors.Default;
+
+document.getElementById("infoFast").innerHTML =
+`
+<div class="moveLeft">
+
+  <div
+    class="moveTypeIcon"
+    style="
+      background:
+      linear-gradient(
+        135deg,
+        ${fastColors[0]},
+        ${fastColors[1]}
+      );
+    "
+  >
+    ${typeIcons[fastMove.type]}
+  </div>
+
+  <div>
+    ${p.moves.fast}
+  </div>
+
+</div>
+
+<div class="moveDamage">
+  ${fastMove.damage}
+</div>
+`;
+
+document.getElementById("infoCharged").innerHTML =
+`
+<div class="moveLeft">
+
+  <div
+    class="moveTypeIcon"
+    style="
+      background:
+      linear-gradient(
+        135deg,
+        ${chargedColors[0]},
+        ${chargedColors[1]}
+      );
+    "
+  >
+    ${typeIcons[chargedMove.type]}
+  </div>
+
+  <div>
+    ${p.moves.charged}
+  </div>
+
+</div>
+
+<div class="moveDamage">
+  ${chargedMove.damage}
+</div>
+`;
+
+  // STARDUST
+  document.getElementById("dustCount").innerText =
+    "✨ " + stardust.toLocaleString();
+
+  
+
+  // MAIN TYPE
+  const mainType =
+    Array.isArray(p.type)
+    ? p.type[0]
+    : p.type;
+
+  const colors =
+    typeColors[mainType] ||
+    typeColors.Default;
+
+  const infoScreen =
+    document.getElementById("infoScreen");
+
+  // BACKGROUND
+  infoScreen.style.background =
+    `
+    radial-gradient(
+      circle at top,
+      rgba(255,255,255,0.15),
+      transparent 45%
+    ),
+    linear-gradient(
+      180deg,
+      ${colors[0]},
+      ${colors[1]}
+    )
+    `;
+
+  // IMAGE
+  const img =
+    document.getElementById("infoImg");
+
+  img.style.backgroundImage =
+    `url(${p.image})`;
+
+  img.style.backgroundSize =
+    "contain";
+
+  img.style.backgroundRepeat =
+    "no-repeat";
+
+  img.style.backgroundPosition =
+    "center";
+
+  showScreen("infoScreen");
+}
+
+function toggleBattlePokemonSelection(p) {
+
+  const index = selectedBattleParty.findIndex(x => x.id === p.id);
+
+  if (index >= 0) {
+    selectedBattleParty.splice(index, 1);
+    return;
+  }
+
+  if (selectedBattleParty.length >= 3) return;
+
+  selectedBattleParty.push(p);
+}
+
+function formatMoveName(name) {
+  return name.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function formatDex(num) {
+  return num.toString().padStart(4, "0");
+}
+
+// ---- THROW BALL ----
+ball.addEventListener("touchstart", e => {
+  isDragging = true;
+  isThrowing = false;
+
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+});
+
+ball.addEventListener("touchmove", e => {
+  if (!isDragging) return;
+
+  const x = e.touches[0].clientX;
+  const y = e.touches[0].clientY;
+
+  ball.style.left = x + "px";
+  ball.style.top = y + "px";
+});
+
+ball.addEventListener("touchend", e => {
+  if (!isDragging) return;
+  isDragging = false;
+
+  const endX = e.changedTouches[0].clientX;
+  const endY = e.changedTouches[0].clientY;
+
+  // START = bottom center (ball start position)
+  startPos.x = window.innerWidth / 2;
+  startPos.y = window.innerHeight - 80;
+
+  // END = where player released (target direction)
+  endPos.x = endX;
+  endPos.y = endY;
+
+  // ðŸŽ¯ CURVE (spin effect)
+  curveStrength = (endX - startX) * 2;
+
+  // ðŸŽ¯ CONTROL POINT (this creates the arc)
+  controlPos.x = (startPos.x + endPos.x) / 2 + curveStrength;
+  controlPos.y = Math.min(startPos.y, endPos.y) - 300;
+
+  throwProgress = 0;
+  isThrowing = true;
+});
+
+function updateBall() {
+// ðŸŽ¯ SHAKE ANIMATION
+if (isShaking) {
+
+  // â¸ï¸ pause logic
+  if (shakePauseTimer > 0) {
+    shakePauseTimer--;
+    
+    // keep ball centered during pause
+    ball.style.transform = `translate(-50%, -50%) scale(0.5)`;
+    return;
+  }
+
+  shakeTimer++;
+
+  // normal shake movement
+  if (shakeTimer % 6 === 0) {
+    shakeDir *= -1;
+    shakeOffset = shakeDir * 1;
+  }
+
+  ball.style.transform = `translate(calc(-50% + ${shakeOffset}px), -50%) scale(0.5)`;
+
+  // count shakes
+  if (shakeTimer % 20 === 0) {
+    shakeCount++;
+
+    // ðŸŽ¯ every 2 shakes â†’ add pause
+    if (shakeCount % 2 === 0) {
+      shakePauseTimer = 30; // duration of pause
+    }
+  }
+
+  // finish
+  if (shakeCount >= 6) {
+    isShaking = false;
+    finishCatch();
+  }
+
+  return;
+}
+// ðŸŽ¯ catch animation overrides throw
+if (catchAnimating) {
+  catchProgress += 0.04;
+
+  if (catchProgress >= 1) {
+    catchAnimating = false;
+    catchProgress = 1;
+  }
+
+  const t = catchProgress;
+
+  // smooth easing (optional but nice)
+  const ease = t * (2 - t);
+
+  const x = catchStart.x + (catchTarget.x - catchStart.x) * ease;
+  const y = catchStart.y + (catchTarget.y - catchStart.y) * ease;
+
+  ballPos.x = x;
+  ballPos.y = y;
+
+  ball.style.left = x + "px";
+  ball.style.top = y + "px";
+  ball.style.transform = "translate(-50%, -50%) scale(0.5)";
+
+  return; // stop normal throw logic
+}
+  if (!isThrowing) return;
+
+  throwProgress += 1 / throwDuration;
+
+  if (throwProgress >= 1) {
+    isThrowing = false;
+    resetBall();
+    return;
+  }
+
+  const t = throwProgress;
+// detect peak (when ball starts going down)
+if (ballPos.y > lastY) {
+  hasPassedPeak = true;
+}
+lastY = ballPos.y;
+
+  // ðŸŽ¯ QUADRATIC BEZIER
+  const x =
+    (1 - t) * (1 - t) * startPos.x +
+    2 * (1 - t) * t * controlPos.x +
+    t * t * endPos.x;
+
+  const y =
+    (1 - t) * (1 - t) * startPos.y +
+    2 * (1 - t) * t * controlPos.y +
+    t * t * endPos.y;
+
+  ballPos.x = x;
+  ballPos.y = y;
+
+  // ðŸŽ¯ DEPTH SCALE (simple, no locking)
+  let scale = 1 - t * 0.6;
+  scale = Math.max(0.4, scale);
+
+  const rotation = throwProgress * 360; // spins 2x
+ball.style.transform = `translate(-70%, -70%) scale(${scale}) rotate(${rotation}deg)`;
+  ball.style.left = x + "px";
+  ball.style.top = y + "px";
+
+  checkHitAfterCurve();
+}
+
+function checkHitAfterCurve() {
+  // âŒ must pass peak first (curve finished)
+  if (!hasPassedPeak) return;
+
+  // âŒ must be near end (slow phase)
+  if (throwProgress < 0.75) return;
+
+  const box = document.getElementById("pokeBox");
+  const rect = box.getBoundingClientRect();
+
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+
+  const dx = ballPos.x - centerX;
+  const dy = ballPos.y - centerY;
+  const distance = Math.sqrt(dx * dx + dy * dy);
+
+  const hitRadius = rect.width * 0.35;
+
+  if (distance < hitRadius) {
+    isThrowing = false;
+    startCatch();
+  }
+}
+
+
+function startCatch() {
+  isThrowing = false;
+
+const titl = document.getElementById("pokeTitle");
+  const box = document.getElementById("pokeBox");
+
+  // hide pokemon
+  titl.style.opacity = 0;
+  box.style.opacity = 0;
+
+  const rect = box.getBoundingClientRect();
+
+  // ðŸŽ¯ start = current ball position
+  catchStart.x = ballPos.x;
+  catchStart.y = ballPos.y;
+
+  // ðŸŽ¯ target = bottom of pokemon (your style)
+  catchTarget.x = ballPos.x;
+  catchTarget.y = rect.bottom;
+
+  catchProgress = 0;
+
+  // â³ delay before ball moves
+  setTimeout(() => {
+    catchAnimating = true;
+
+    // â³ AFTER movement finishes â†’ start shake
+    setTimeout(() => {
+      startShake();
+    }, 500); // tweak if needed
+
+  }, 300);
+}
+
+function startShake() {
+  isShaking = true;
+  shakeCount = 0;
+  shakeTimer = 0;
+  shakeDir = 1;
+}
+
+function showCatchMessage(text) {
+
+  const msg =
+    document.getElementById("catchMessage");
+
+  msg.innerText = text;
+
+  msg.style.opacity = "1";
+
+  msg.style.transform =
+    "translateX(-50%) translateY(0px)";
+}
+
+function hideCatchMessage() {
+
+  const msg =
+    document.getElementById("catchMessage");
+
+  msg.style.opacity = "0";
+
+  msg.style.transform =
+    "translateX(-50%) translateY(-20px)";
+}
+
+function showRewardPopup(pokemon, dust) {
+
+  const popup =
+    document.getElementById("rewardPopup");
+
+  const card =
+    document.getElementById("rewardCard");
+
+const candyreward = pokemon.candyReward;
+
+  document.getElementById("rewardDust").innerHTML =
+  `✨${dust}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🍬${candyreward}`;
+    
+
+  popup.style.opacity = "1";
+  popup.style.pointerEvents = "auto";
+
+  card.style.transform = "scale(1)";
+
+  document.getElementById("rewardBtn").onclick =
+    () => {
+
+      popup.style.opacity = "0";
+      popup.style.pointerEvents = "none";
+
+      card.style.transform = "scale(0.8)";
+
+      showPokemonInfo(pokemon);
+    };
+}
+
+function finishCatch() {
+  const box = document.getElementById("pokeBox");
+  
+  const rect = box.getBoundingClientRect();
+
+  const centerX = ballPos.x;
+  const centerY = rect.bottom;
+
+  const roll = Math.random();
+
+const catchChance = currentPokemon.catchRate;
+
+const escapeChance = currentPokemon.escapeRate;
+
+const fleeChance = currentPokemon.fleeRate;
+
+if (roll < catchChance) {
+
+  createStarBurst(centerX, centerY);
+
+  const dustEarned =
+    1000000 + Math.floor(Math.random() * 200);
+
+  stardust += dustEarned;
+
+const species=
+currentPokemon.candyFam;
+
+if(!candyBag[species]){
+candyBag[species]=0;
+}
+
+candyBag[species]+= 10000 ||
+currentPokemon.candyReward || 3;
+
+  setTimeout(() => {
+    showCatchMessage("Gotcha!");
+  }, 400);
+
+  setTimeout(() => {
+    showCatchMessage(
+      `${currentPokemon.name} was caught!`
+    );
+  }, 1600);
+
+  setTimeout(() => {
+
+    hideCatchMessage();
+
+    storage.push(currentPokemon);
+
+    renderStorage();
+removePokemon(currentPokemon.id);
+    overworldPokemon =
+      overworldPokemon.filter(
+        p => p.id !== currentPokemon.id
+      );
+
+    showRewardPopup(
+      currentPokemon,
+      dustEarned
+    );
+
+    resetBall();
+
+  }, 3200);
+
+} else if (
+
+  roll < catchChance + escapeChance
+
+) {
+
+  // 💥 BREAKOUT
+  breakoutAnimation();
+
+  setTimeout(() => {
+
+    
+
+    setTimeout(() => {
+      hideCatchMessage();
+    }, 1200);
+
+    resetBall();
+
+  }, 500);
+
+} else {
+
+  // 👋 FLEE
+  fleeAnimation();
+
+  setTimeout(() => {
+
+    showCatchMessage(
+      `Oh no! The wild ${currentPokemon.name} fled.`
+    );
+
+    // remove from overworld
+    removePokemon(currentPokemon.id);
+    overworldPokemon =
+      overworldPokemon.filter(
+        p => p.id !== currentPokemon.id
+      );
+
+    setTimeout(() => {
+
+      hideCatchMessage();
+
+      showScreen("overworld");
+
+      resetBall();
+
+    }, 1500);
+
+  }, 500);
+
+}
+}
+
+function resetBall() {
+  isThrowing = false;
+  catchAnimating = false;
+  
+hasPassedPeak = false;
+lastY = 0;
+  ball.style.left = "50%";
+  ball.style.bottom = "40px";
+  ball.style.top = "";
+  ball.style.transform = "translateX(-50%) scale(1)";
+}
+
+function createStarBurst(x, y) {
+  for (let i = 0; i < 10; i++) {
+    const star = document.createElement("div");
+
+    star.style.position = "absolute";
+    star.style.left = x + "px";
+    star.style.top = y + "px";
+    star.style.width = "6px";
+    star.style.height = "6px";
+    star.style.background = "yellow";
+    star.style.borderRadius = "50%";
+    star.style.pointerEvents = "none";
+    star.style.zIndex = 999;
+
+    document.body.appendChild(star);
+
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 40 + Math.random() * 40;
+
+    const targetX = x + Math.cos(angle) * distance;
+    const targetY = y + Math.sin(angle) * distance;
+
+    star.animate([
+      { transform: "translate(0,0)", opacity: 1 },
+      { transform: `translate(${targetX - x}px, ${targetY - y}px)`, opacity: 0 }
+    ], {
+      duration: 600,
+      easing: "ease-out"
+    });
+
+    setTimeout(() => star.remove(), 600);
+  }
+}
+
+function breakoutAnimation() {
+const titl = document.getElementById("pokeTitle");
+  const box = document.getElementById("pokeBox");
+
+  // show pokemon again
+  titl.style.opacity = 1;
+  box.style.opacity = 1;
+
+  // quick jump effect
+  box.animate([
+    { transform: "translateY(0px)" },
+    { transform: "translateY(-40px)" },
+    { transform: "translateY(0px)" }
+  ], {
+    duration: 400,
+    easing: "ease-out"
+  });
+  titl.animate([
+    { transform: "translateY(0px)" },
+    { transform: "translateY(-40px)" },
+    { transform: "translateY(0px)" }
+  ], {
+    duration: 400,
+    easing: "ease-out"
+  });
+
+  // ball knockback
+  ball.animate([
+    { transform: "translate(-50%, -50%) scale(0.5)" },
+    { transform: "translate(-50%, -80%) scale(0.6)" },
+    { transform: "translate(-50%, -50%) scale(0.5)" }
+  ], {
+    duration: 300
+  });
+}
+
+function fleeAnimation(){
+
+const box=document.getElementById("pokeBox");
+const title=document.getElementById("pokeTitle");
+const catchScreen=document.getElementById("catchScreen");
+
+box.style.opacity=1;
+title.style.opacity=1;
+
+for(let i=0;i<5;i++){
+
+const line=document.createElement("div");
+
+line.className="fleeLine";
+
+line.style.width=(80+Math.random()*60)+"px";
+line.style.left="40%";
+line.style.top=(320+Math.random()*80)+"px";
+
+catchScreen.appendChild(line);
+
+line.animate([
+{
+transform:"translateX(0px)",
+opacity:0
+},
+{
+transform:"translateX(-120px)",
+opacity:1
+},
+{
+transform:"translateX(-240px)",
+opacity:0
+}
+],{
+duration:1300,
+easing:"ease-out"
+});
+
+setTimeout(()=>{
+line.remove();
+},950);
+
+}
+
+for(let i=0;i<8;i++){
+
+const smoke=document.createElement("div");
+
+smoke.className="fleeSmoke";
+
+smoke.style.left=
+(window.innerWidth/2-20+
+(Math.random()*140-70))+"px";
+
+smoke.style.top=
+(330+(Math.random()*100-50))+"px";
+
+catchScreen.appendChild(smoke);
+
+smoke.animate([
+{
+transform:"scale(0.5)",
+opacity:0.8
+},
+{
+transform:`translate(${Math.random()*80-40}px,${Math.random()*40-20}px) scale(1.8)`,
+opacity:0
+}
+],{
+duration:1200,
+easing:"ease-out"
+});
+
+setTimeout(()=>{
+smoke.remove();
+},1250);
+
+}
+
+box.animate([
+{
+transform:"translateX(0px)",
+opacity:1
+},
+{
+transform:"translateX(-120px)",
+opacity:0.7
+},
+{
+transform:"translateX(-320px)",
+opacity:0
+}
+],{
+duration:900,
+easing:"ease-in"
+});
+
+title.animate([
+{
+opacity:1
+},
+{
+opacity:0
+}
+],{
+duration:600
+});
+setTimeout(()=>{
+box.style.opacity=0;
+box.style.transform="translateX(-400px)";
+title.style.opacity=0;
+},900);
+}
+
+function resetCatchUI(){
+
+const box=document.getElementById("pokeBox");
+const title=document.getElementById("pokeTitle");
+
+box.getAnimations().forEach(a=>a.cancel());
+title.getAnimations().forEach(a=>a.cancel());
+
+box.style.opacity=1;
+title.style.opacity=1;
+
+box.style.transform="";
+title.style.transform="";
+
+box.style.transition="none";
+title.style.transition="none";
+
+box.offsetHeight;
+title.offsetHeight;
+
+box.style.transition="";
+title.style.transition="";
+
+}
+
+function openBattlePokemonPicker(slotIndex) {
+
+  choosingBattlePokemon = true;
+
+  currentBattleSlot = slotIndex;
+
+  showScreen('storageScreen');
+}
+
+function selectBattlePokemon(pokemon) {
+
+  if (!choosingBattlePokemon) return;
+
+  const exists = selectedBattleParty.find(p => p.id === pokemon.id);
+
+  if (exists) {
+    selectedBattleParty =
+      selectedBattleParty.filter(p => p.id !== pokemon.id);
+  } else {
+    if (selectedBattleParty.length >= 3) return;
+    selectedBattleParty.push(pokemon);
+  }
+
+  updateBattlePartyUI();
+}
+
+function updateBattlePartyUI() {
+
+  const wrappers =
+    document.querySelectorAll(".partySlotWrapper");
+
+  wrappers.forEach((wrap, i) => {
+
+    const cpEl =
+      wrap.querySelector(".slotCP");
+
+    const slotEl =
+      wrap.querySelector(".partySlot");
+
+    const nameEl =
+      wrap.querySelector(".slotName");
+
+    const poke =
+      selectedBattleParty[i];
+
+    if (!poke) {
+
+      slotEl.style.backgroundImage = "";
+      cpEl.innerText = "";
+      nameEl.innerText = "";
+
+      return;
+    }
+
+    slotEl.style.backgroundImage =
+      `url(${poke.image})`;
+
+    cpEl.innerText =
+      `CP ${poke.cp}`;
+
+    nameEl.innerText =
+      poke.name;
+  });
+}
+
+function toggleGameMenu() {
+
+  const menu =
+    document.getElementById("gameMenu");
+
+  if (menu.style.display === "block") {
+
+    menu.style.display = "none";
+
+  } else {
+
+    menu.style.display = "block";
+
+  }
+
+}
+
+function beginMatchmaking() {
+
+  if (selectedBattleParty.length !== 3) return;
+
+  const btn =
+    document.getElementById("battleStartBtn");
+
+  btn.disabled = true;
+  btn.innerText = "BATTLE STARTING...";
+
+  setTimeout(() => {
+
+    btn.disabled = false;
+    btn.innerText = "START BATTLE";
+
+    choosingBattlePokemon = false;
+
+    startBattle(selectedBattleParty);
+
+  }, 2000);
+}
+
+
+document
+  .getElementById("battleScreen")
+  .addEventListener("click", e => {
+
+    if (e.target.id === "chargedBtn") {
+      return;
+    }
+
+    playerFastAttack();
+  });
+
+document
+  .getElementById("chargedBtn")
+  .onclick = useChargedMove;
+  
+  function updatePlayerSprite() {
+
+  playerEl.style.backgroundImage =
+    `url(${player.sprites[player.direction]})`;
+
+}
+  
+  function validateMoves(){
+
+Object.values(POKEDEX).forEach(p=>{
+
+p.fastMoves.forEach(m=>{
+if(!MOVES[m])console.warn("Missing move:",m);
+});
+
+p.chargedMoves.forEach(m=>{
+if(!MOVES[m])console.warn("Missing move:",m);
+});
+
+});
+
+}
+  
+  function saveGame() {
+  const data = {
+    player,
+    storage,
+    overworldPokemon,
+    stardust,
+    candyBag,
+    distanceWalked,
+    lastPlayerPos
+  };
+
+  localStorage.setItem("pokemonSave", JSON.stringify(data));
+}
+
+function loadGame() {
+  const data = JSON.parse(localStorage.getItem("pokemonSave"));
+  if (!data) return;
+
+  player = data.player;
+  stardust = data.stardust;
+  candyBag = data.candyBag;
+  distanceWalked = data.distanceWalked;
+  lastPlayerPos = data.lastPlayerPos;
+
+  overworldPokemon = data.overworldPokemon.map(p => {
+
+  // NEW REMAINING LIFETIME
+  const lifetime =
+    MIN_DESPAWN_TIME +
+    Math.random() *
+    (MAX_DESPAWN_TIME - MIN_DESPAWN_TIME);
+
+  return {
+    ...p,
+
+    // RESET DESPAWN TIMER FROM NOW
+    despawnAt: Date.now() + lifetime
+  };
+
+});
+  // 🔥 IMPORTANT: rebuild Pokémon
+  storage = data.storage.map(p => {
+    const base = POKEDEX[p.name].baseStats;
+
+    return {
+      ...p,
+      cp: calculateCP(base, p.iv, p.level),
+      battleStats: calculateBattleStats(base, p.iv, p.level)
+    };
+  });
+
+  
+  renderStorage();
+  renderPokemon();
+}
+
+function manualSave() {
+  saveGame();
+  console.log("Game Saved");
+}
+
+function manualLoad() {
+  loadGame();
+  console.log("Game Loaded");
+}
+  
+  function deleteSave() {
+  const confirmDelete = confirm("Delete all saved data? This cannot be undone.");
+
+  if (!confirmDelete) return;
+
+  // clear storage save
+  localStorage.removeItem("pokemonSave");
+
+  // reset game state
+  storage = [];
+  stardust = 0;
+  candyBag = {};
+  overworldPokemon = [];
+
+  player = {
+    x: 1500,
+    y: 1500,
+    direction: "down",
+    sprites: player.sprites
+  };
+
+  selectedPokemon = null;
+  viewingPokemon = null;
+  currentPokemon = null;
+
+  distanceWalked = 0;
+  lastPlayerPos = { x: player.x, y: player.y };
+
+  // UI refresh
+  renderStorage();
+  renderPokemon();
+
+  showScreen("overworld");
+
+  alert("Save deleted!");
+  location.reload();
+}
+
+ window.addEventListener("beforeunload", saveGame);
+ setInterval(saveGame, 10000); // every 10 seconds
+
+
+// -------- START --------
+loadGame();
+validateMoves();
+//initialSpawn();
+gameLoop();
+</script>
+
+</body>
+</html>
