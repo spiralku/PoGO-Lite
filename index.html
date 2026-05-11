@@ -50,7 +50,7 @@ html, body {
   width: 100%;
   height: 100%;
 
-  background-image: url("overworld.jpg");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/overworld.jpg");
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center;
@@ -166,7 +166,7 @@ border-color:
   width: 60px;
   height: 60px;
 
-  background-image: url("storage.png");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/storage.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -180,7 +180,7 @@ border-color:
 #catchScreen {
   position: relative;
 
-  background-image: url("bg-grass.jpg"); /* your image */
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/bg-grass.jpg"); /* your image */
   background-size: cover;
   background-position: center;
 }
@@ -764,7 +764,7 @@ margin-bottom: 20px;
   width: 120px;
   height: 120px;
 
-  background-image: url("pokeball.png");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/pokeball.png");
   background-size: contain;
   background-repeat: no-repeat;
   background-position: center;
@@ -1033,7 +1033,7 @@ white-space: nowrap;
   position: absolute;
   inset: 0;
 
-  background-image: url("bg-grass.jpg");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/bg-grass.jpg");
   background-size: cover;
   background-position: center;
 
@@ -1355,7 +1355,7 @@ max-width: 220px;
       rgba(0,0,0,0.55),
       rgba(0,0,0,0.75)
     ),
-    url('images/bg-grass.jpg');
+    url('https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/bg-grass.jpg');
 
   background-size: cover;
   background-position: center;
@@ -1528,7 +1528,7 @@ max-width: 220px;
   width: 60px;
   height: 60px;
 
-  background-image: url("storage.png");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/storage.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1548,7 +1548,7 @@ max-width: 220px;
   width: 60px;
   height: 60px;
 
-  background-image: url("storage.png");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/storage.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1586,7 +1586,7 @@ max-width: 220px;
   width: 60px;
   height: 60px;
 
-  background-image: url("storage.png");
+  background-image: url("https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/storage.png");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -1925,10 +1925,56 @@ box-shadow:
   transition: opacity 0.6s ease;
   z-index: 99999;
 }
+/* LOADING SCREEN */
+  #loadingScreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: white;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  color: black;
+
+  z-index: 99999;
+}
+
+  #barContainer {
+    width: 300px;
+    height: 20px;
+    background: #333;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 15px;
+  }
+
+  #bar {
+    height: 100%;
+    width: 0%;
+    background: limegreen;
+    transition: width 0.2s;
+  }
+
+ 
 </style>
 </head>
 
 <body>
+<!-- LOADING SCREEN -->
+<div id="loadingScreen">
+  <h2>POKEMON GO LITE</h2>
+  <div id="percent">0%</div>
+
+  <div id="barContainer">
+    <div id="bar"></div>
+  </div>
+</div>
+
 <!------- EVO SCREEN ------>
 <div id="evoScene" class="hidden">
 
@@ -2000,9 +2046,9 @@ box-shadow:
   </div>
 
 <div id="saveLoadMenu">
-  <button class="gameBtn" onclick="manualSave()">💾 SAVE</button>
-  <button class="gameBtn" onclick="manualLoad()">📂 LOAD</button>
-  <button class="gameBtn" onclick="deleteSave()">🗑️ DELETE</button>
+//  <button class="gameBtn" onclick="manualSave()">💾 SAVE</button>
+//  <button class="gameBtn" onclick="manualLoad()">📂 LOAD</button>
+//  <button class="gameBtn" onclick="deleteSave()">🗑️ DELETE</button>
 </div>
 
   <!-- PLACEHOLDER -->
@@ -2329,6 +2375,83 @@ EVOLVE
 
 <div id="battleFade"></div>
 <script>
+
+const assets = [
+  "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/overworld.jpg",
+  "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/bg-grass.jpg",
+  "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/pokeball.png",
+  "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/storage.png",
+  "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_up.png",
+    "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_down.png",
+      "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_left.png",
+        "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_right.png"
+];
+
+/* =========================
+   2. PRELOAD FUNCTION
+========================= */
+function preloadAssets(urls, onProgress, onComplete) {
+  let loaded = 0;
+
+  urls.forEach(url => {
+    const img = new Image();
+
+    img.onload = () => {
+      loaded++;
+      updateProgress();
+    };
+
+    img.onerror = () => {
+      loaded++;
+      updateProgress();
+    };
+
+    img.src = url;
+  });
+
+  function updateProgress() {
+    const percent = Math.floor((loaded / urls.length) * 100);
+
+    onProgress(percent);
+
+    if (loaded === urls.length) {
+      onComplete();
+    }
+  }
+}
+
+/* =========================
+   3. UI ELEMENTS
+========================= */
+const percentText = document.getElementById("percent");
+const bar = document.getElementById("bar");
+const loadingScreen = document.getElementById("loadingScreen");
+const game = document.getElementById("game");
+
+/* =========================
+   4. START PRELOADING
+========================= */
+preloadAssets(
+  assets,
+
+  // progress update
+  (percent) => {
+    percentText.textContent = percent + "%";
+    bar.style.width = percent + "%";
+  },
+
+  // done
+  () => {
+    setTimeout(() => {
+      loadingScreen.style.display = "none";
+      game.style.display = "block";
+
+      showScreen("overworld");
+    }, 300);
+  }
+);
+
+
 // -------- SCREEN --------
 function showScreen(id) {
 
@@ -2405,10 +2528,10 @@ let player = {
   direction: "down",
 
   sprites: {
-    up: "player_up.png",
-    down: "player_down.png",
-    left: "player_left.png",
-    right: "player_right.png"
+    up: "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_up.png",
+    down: "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_down.png",
+    left: "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_left.png",
+    right: "https://cdn.jsdelivr.net/gh/spiralku/POGO-2D@main/player_right.png"
   }
 
 };
@@ -2696,8 +2819,95 @@ type:"Electric",
 category:"charged",
 damage:50,
 energyCost:55
-}
+},
 
+Thunder:{type:"Electric",category:"charged",damage:70,energyCost:75},
+Discharge:{type:"Electric",category:"charged",damage:40,energyCost:45},
+ThunderPunch:{type:"Electric",category:"charged",damage:35,energyCost:40},
+Spark:{type:"Electric",category:"fast",damage:6,energyGain:9,cooldown:500},
+VoltSwitch:{type:"Electric",category:"fast",damage:12,energyGain:10,cooldown:900},
+ChargeBeam:{type:"Electric",category:"fast",damage:5,energyGain:11,cooldown:600},
+IceShard:{type:"Ice",category:"fast",damage:5,energyGain:10,cooldown:500},
+FrostBreath:{type:"Ice",category:"fast",damage:7,energyGain:8,cooldown:600},
+PowderSnow:{type:"Ice",category:"fast",damage:3,energyGain:12,cooldown:400},
+IceBeam:{type:"Ice",category:"charged",damage:50,energyCost:55},
+Blizzard:{type:"Ice",category:"charged",damage:75,energyCost:75},
+Avalanche:{type:"Ice",category:"charged",damage:55,energyCost:45},
+IcyWind:{type:"Ice",category:"charged",damage:35,energyCost:40},
+KarateChop:{type:"Fighting",category:"fast",damage:5,energyGain:10,cooldown:500},
+Counter:{type:"Fighting",category:"fast",damage:8,energyGain:7,cooldown:500},
+LowKick:{type:"Fighting",category:"fast",damage:6,energyGain:8,cooldown:500},
+RockSmash:{type:"Fighting",category:"fast",damage:9,energyGain:7,cooldown:600},
+DynamicPunch:{type:"Fighting",category:"charged",damage:65,energyCost:60},
+CloseCombat:{type:"Fighting",category:"charged",damage:75,energyCost:65},
+CrossChop:{type:"Fighting",category:"charged",damage:50,energyCost:45},
+BrickBreak:{type:"Fighting",category:"charged",damage:40,energyCost:40},
+AuraSphere:{type:"Fighting",category:"charged",damage:70,energyCost:60},
+MudShot:{type:"Ground",category:"fast",damage:3,energyGain:12,cooldown:400},
+MudSlap:{type:"Ground",category:"fast",damage:9,energyGain:7,cooldown:600},
+Earthquake:{type:"Ground",category:"charged",damage:80,energyCost:75},
+Bulldoze:{type:"Ground",category:"charged",damage:50,energyCost:60},
+DrillRun:{type:"Ground",category:"charged",damage:60,energyCost:50},
+BoneClub:{type:"Ground",category:"charged",damage:35,energyCost:35},
+RockThrow:{type:"Rock",category:"fast",damage:8,energyGain:7,cooldown:600},
+SmackDown:{type:"Rock",category:"fast",damage:10,energyGain:6,cooldown:700},
+StoneEdge:{type:"Rock",category:"charged",damage:75,energyCost:65},
+RockSlide:{type:"Rock",category:"charged",damage:50,energyCost:45},
+AncientPower:{type:"Rock",category:"charged",damage:45,energyCost:45},
+PoisonJab:{type:"Poison",category:"fast",damage:7,energyGain:8,cooldown:500},
+Acid:{type:"Poison",category:"fast",damage:6,energyGain:8,cooldown:500},
+SludgeBomb:{type:"Poison",category:"charged",damage:55,energyCost:50},
+SludgeWave:{type:"Poison",category:"charged",damage:70,energyCost:65},
+CrossPoison:{type:"Poison",category:"charged",damage:40,energyCost:35},
+Lick:{type:"Ghost",category:"fast",damage:5,energyGain:10,cooldown:500},
+ShadowClaw:{type:"Ghost",category:"fast",damage:6,energyGain:11,cooldown:500},
+Hex:{type:"Ghost",category:"fast",damage:7,energyGain:9,cooldown:600},
+ShadowBall:{type:"Ghost",category:"charged",damage:70,energyCost:55},
+OminousWind:{type:"Ghost",category:"charged",damage:40,energyCost:40},
+DragonBreath:{type:"Dragon",category:"fast",damage:6,energyGain:8,cooldown:500},
+DragonTail:{type:"Dragon",category:"fast",damage:10,energyGain:8,cooldown:700},
+Twister:{type:"Dragon",category:"charged",damage:40,energyCost:45},
+DragonPulse:{type:"Dragon",category:"charged",damage:60,energyCost:60},
+Outrage:{type:"Dragon",category:"charged",damage:80,energyCost:70},
+DragonClaw:{type:"Dragon",category:"charged",damage:45,energyCost:35},
+Confusion:{type:"Psychic",category:"fast",damage:12,energyGain:8,cooldown:900},
+ZenHeadbutt:{type:"Psychic",category:"fast",damage:8,energyGain:6,cooldown:700},
+PsychoCut:{type:"Psychic",category:"fast",damage:3,energyGain:13,cooldown:400},
+Psychic:{type:"Psychic",category:"charged",damage:65,energyCost:55},
+Psystrike:{type:"Psychic",category:"charged",damage:70,energyCost:50},
+FutureSight:{type:"Psychic",category:"charged",damage:80,energyCost:70},
+DarkPulse:{type:"Dark",category:"charged",damage:55,energyCost:50},
+Crunch:{type:"Dark",category:"charged",damage:50,energyCost:45},
+FoulPlay:{type:"Dark",category:"charged",damage:60,energyCost:50},
+FeintAttack:{type:"Dark",category:"fast",damage:6,energyGain:9,cooldown:500},
+Snarl:{type:"Dark",category:"fast",damage:5,energyGain:13,cooldown:500},
+MetalClaw:{type:"Steel",category:"fast",damage:7,energyGain:8,cooldown:500},
+BulletPunch:{type:"Steel",category:"fast",damage:6,energyGain:9,cooldown:500},
+IronTail:{type:"Steel",category:"fast",damage:9,energyGain:6,cooldown:700},
+FlashCannon:{type:"Steel",category:"charged",damage:70,energyCost:65},
+IronHead:{type:"Steel",category:"charged",damage:50,energyCost:50},
+MeteorMash:{type:"Steel",category:"charged",damage:75,energyCost:60},
+FairyWind:{type:"Fairy",category:"fast",damage:3,energyGain:12,cooldown:400},
+Charm:{type:"Fairy",category:"fast",damage:11,energyGain:6,cooldown:800},
+DazzlingGleam:{type:"Fairy",category:"charged",damage:70,energyCost:70},
+PlayRough:{type:"Fairy",category:"charged",damage:60,energyCost:60},
+Moonblast:{type:"Fairy",category:"charged",damage:75,energyCost:65},
+BugBite:{type:"Bug",category:"fast",damage:5,energyGain:11,cooldown:500},
+FuryCutter:{type:"Bug",category:"fast",damage:3,energyGain:12,cooldown:400},
+XScissor:{type:"Bug",category:"charged",damage:45,energyCost:35},
+BugBuzz:{type:"Bug",category:"charged",damage:70,energyCost:60},
+SilverWind:{type:"Bug",category:"charged",damage:45,energyCost:45},
+Peck:{type:"Flying",category:"fast",damage:6,energyGain:8,cooldown:500},
+WingAttack:{type:"Flying",category:"fast",damage:5,energyGain:11,cooldown:500},
+SkyAttack:{type:"Flying",category:"charged",damage:75,energyCost:55},
+BraveBird:{type:"Flying",category:"charged",damage:90,energyCost:70},
+AerialAce:{type:"Flying",category:"charged",damage:45,energyCost:40},
+BodySlam:{type:"Normal",category:"charged",damage:50,energyCost:40},
+Swift:{type:"Normal",category:"charged",damage:40,energyCost:35},
+Return:{type:"Normal",category:"charged",damage:60,energyCost:55},
+SkullBash:{type:"Normal",category:"charged",damage:75,energyCost:75},
+LastResort:{type:"Normal",category:"charged",damage:65,energyCost:55},
+Struggle:{type:"Normal",category:"charged",damage:35,energyCost:0},Dig:{type:"Ground",category:"charged",damage:45,energyCost:50},Megahorn:{type:"Bug",category:"charged",damage:60,energyCost:65},Pound:{type:"Normal",category:"fast",damage:4,energyGain:8,cooldown:500},FireBlast:{type:"Fire",category:"charged",damage:70,energyCost:80},HeatWave:{type:"Fire",category:"charged",damage:60,energyCost:70},PoisonFang:{type:"Poison",category:"charged",damage:35,energyCost:40},AirCutter:{type:"Flying",category:"charged",damage:30,energyCost:35},SeedBomb:{type:"Grass",category:"charged",damage:40,energyCost:40},PetalBlizzard:{type:"Grass",category:"charged",damage:55,energyCost:65},Psybeam:{type:"Psychic",category:"charged",damage:40,energyCost:45},SuckerPunch:{type:"Dark",category:"fast",damage:5,energyGain:9,cooldown:500},MudBomb:{type:"Ground",category:"charged",damage:35,energyCost:40},NightSlash:{type:"Dark",category:"charged",damage:40,energyCost:45},BubbleBeam:{type:"Water",category:"charged",damage:30,energyCost:35},IcePunch:{type:"Ice",category:"charged",damage:40,energyCost:40},Psyshock:{type:"Psychic",category:"charged",damage:45,energyCost:45},LeafBlade:{type:"Grass",category:"charged",damage:50,energyCost:45},WaterPulse:{type:"Water",category:"charged",damage:35,energyCost:40},RockBlast:{type:"Rock",category:"charged",damage:40,energyCost:45},FlameCharge:{type:"Fire",category:"charged",damage:40,energyCost:45},MagnetBomb:{type:"Steel",category:"charged",damage:45,energyCost:50},DrillPeck:{type:"Flying",category:"charged",damage:50,energyCost:45},ViceGrip:{type:"Normal",category:"charged",damage:35,energyCost:40},Crabhammer:{type:"Water",category:"charged",damage:65,energyCost:70},BulletSeed:{type:"Grass",category:"fast",damage:3,energyGain:11,cooldown:400},DoubleKick:{type:"Fighting",category:"fast",damage:5,energyGain:9,cooldown:500},Infestation:{type:"Bug",category:"fast",damage:4,energyGain:10,cooldown:500},HornAttack:{type:"Normal",category:"charged",damage:40,energyCost:40},GrassKnot:{type:"Grass",category:"charged",damage:50,energyCost:50},PowerUpPunch:{type:"Fighting",category:"charged",damage:25,energyCost:35},AuroraBeam:{type:"Ice",category:"charged",damage:45,energyCost:50},Waterfall:{type:"Water",category:"fast",damage:8,energyGain:7,cooldown:600},PowerGem:{type:"Rock",category:"charged",damage:50,energyCost:55},DrainingKiss:{type:"Fairy",category:"charged",damage:40,energyCost:45},Splash:{type:"Water",category:"fast",damage:0,energyGain:6,cooldown:500},Surf:{type:"Water",category:"charged",damage:45,energyCost:40},Transform:{type:"Normal",category:"fast",damage:0,energyGain:0,cooldown:1000},HiddenPower:{type:"Normal",category:"fast",damage:6,energyGain:8,cooldown:500},ZapCannon:{type:"Electric",category:"charged",damage:80,energyCost:90},AquaJet:{type:"Water",category:"charged",damage:35,energyCost:35},RockTomb:{type:"Rock",category:"charged",damage:50,energyCost:60},Wrap:{type:"Normal",category:"charged",damage:35,energyCost:40},SteelWing:{type:"Steel",category:"fast",damage:7,energyGain:6,cooldown:600},Hurricane:{type:"Flying",category:"charged",damage:70,energyCost:80},
 };
 
 const POKEDEX = {
@@ -2711,8 +2921,8 @@ type: ["Grass", "Poison"],
 evolvesFrom: null,
 evolvesTo: "Ivysaur",
 evolutionCost: 25,
-image: "bulbasaur.png",
-shinyImage: "shiny/bulbasaur.png",
+image: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/001.png",
+shinyImage: "images/shiny/bulbasaur.png",
 canBeShiny: true,
 pokemonScale: 1.1,
 rarity: "common",
@@ -2745,8 +2955,8 @@ type: ["Grass", "Poison"],
 evolvesFrom: "Bulbasaur",
 evolvesTo: "Venusaur",
 evolutionCost: 100,
-image: "ivysaur.png",
-shinyImage: "shiny/ivysaur.png",
+image: "images/ivysaur.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/002.png",
 canBeShiny: true,
 pokemonScale: 1.3,
 rarity: "uncommon",
@@ -2779,8 +2989,8 @@ type: ["Grass", "Poison"],
 evolvesFrom: "Ivysaur",
 evolvesTo: null,
 evolutionCost: null,
-image: "venusaur.png",
-shinyImage: "shiny/venusaur.png",
+image: "images/venusaur.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/003.png",
 canBeShiny: true,
 pokemonScale: 1.6,
 rarity: "rare",
@@ -2813,8 +3023,8 @@ type: ["Fire"],
 evolvesFrom: null,
 evolvesTo: "Charmeleon",
 evolutionCost: 25,
-image: "charmander.png",
-shinyImage: "shiny/charmander.png",
+image: "images/charmander.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/004.png",
 canBeShiny: true,
 pokemonScale: 1.1,
 rarity: "common",
@@ -2847,8 +3057,8 @@ type: ["Fire"],
 evolvesFrom: "Charmander",
 evolvesTo: "Charizard",
 evolutionCost: 100,
-image: "charmeleon.png",
-shinyImage: "shiny/charmeleon.png",
+image: "images/charmeleon.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/005.png",
 canBeShiny: true,
 pokemonScale: 1.3,
 rarity: "uncommon",
@@ -2881,8 +3091,8 @@ type: ["Fire", "Flying"],
 evolvesFrom: "Charmeleon",
 evolvesTo: null,
 evolutionCost: null,
-image: "charizard.png",
-shinyImage: "shiny/charizard.png",
+image: "images/charizard.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/006.png",
 canBeShiny: true,
 pokemonScale: 1.7,
 rarity: "rare",
@@ -2915,8 +3125,8 @@ type: ["Water"],
 evolvesFrom: null,
 evolvesTo: "Wartortle",
 evolutionCost: 25,
-image: "squirtle.png",
-shinyImage: "shiny/squirtle.png",
+image: "images/squirtle.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/007.png",
 canBeShiny: true,
 pokemonScale: 1.1,
 rarity: "common",
@@ -2949,8 +3159,8 @@ type: ["Water"],
 evolvesFrom: "Squirtle",
 evolvesTo: "Blastoise",
 evolutionCost: 100,
-image: "wartortle.png",
-shinyImage: "shiny/wartortle.png",
+image: "images/wartortle.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/007.png",
 canBeShiny: true,
 pokemonScale: 1.3,
 rarity: "uncommon",
@@ -2983,8 +3193,8 @@ type: ["Water"],
 evolvesFrom: "Wartortle",
 evolvesTo: null,
 evolutionCost: null,
-image: "blastoise.png",
-shinyImage: "shiny/blastoise.png",
+image: "images/blastoise.png",
+shinyImage: "https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/009.png",
 canBeShiny: true,
 pokemonScale: 1.7,
 rarity: "rare",
@@ -3008,73 +3218,437 @@ fastMoves: ["WaterGun", "Bite"],
 chargedMoves: ["HydroCannon"]
 },
 
-Pikachu: {
-dex: 25,
-name: "Pikachu",
-category: "A",
-description: "A",
-type: ["Electric"],
-evolvesFrom: "Pichu",
-evolvesTo: "Raichu",
-evolutionCost: 50,
-image: "pikachu.png",
-shinyImage: "shiny/pikachu.png",
-canBeShiny: true,
-pokemonScale: 1.2,
-rarity: "common",
-spawnWeight: 30,
-spawnTime: ["day"],
-biomes: ["city", "grass"],
-weatherBoost: ["rain"],
-catchRate: 0.8,
-escapeRate: 0.19,
-fleeRate: 0.01,
-stardustReward: 100,
-candyReward: 3,
-candyFamily: "Pichu",
-buddyDistance: 1,
-baseStats: {
-attack: 112,
-defense: 96,
-hp: 111
+Caterpie:{
+dex:10,
+name:"Caterpie",
+category:"A",
+description:"A",
+type:["Bug"],
+evolvesFrom:null,
+evolvesTo:"Metapod",
+evolutionCost:12,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/010.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/010.png",
+canBeShiny:true,
+pokemonScale:0.8,
+rarity:"common",
+spawnWeight:45,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain"],
+catchRate:0.9,
+escapeRate:0.1,
+fleeRate:0.01,
+stardustReward:100,
+candyReward:3,
+candyFamily:"Caterpie",
+buddyDistance:1,
+baseStats:{attack:55,defense:55,hp:128},
+fastMoves:["BugBite","Tackle"],
+chargedMoves:["Struggle"]
 },
-fastMoves: ["ThunderShock", "QuickAttack"],
-chargedMoves: ["WildCharge"]
-},
-Patrick: {
-dex: 999,
-name: "Patrick Nolan",
-category: "A",
-description: "A",
-type: ["Fire"],
-evolvesFrom: null,
-evolvesTo: null,
-evolutionCost: 50,
-image: "patrick.png",
-shinyImage: "shiny/patrick.png",
-canBeShiny: true,
-pokemonScale: 1.2,
-rarity: "legendary",
-spawnWeight: 30,
-spawnTime: ["day"],
-biomes: ["city", "grass"],
-weatherBoost: ["rain"],
-catchRate: 0.4,
-escapeRate: 0.5,
-fleeRate: 0.1,
-stardustReward: 100,
-candyReward: 3,
-candyFamily: "Patrick",
-buddyDistance: 1,
-baseStats: {
-attack: 150,
-defense: 150,
-hp: 150
-},
-fastMoves: ["Ember","QuickAttack"],
-chargedMoves: ["Flamethrower", "HyperBeam"]
-}
 
+Metapod:{
+dex:11,
+name:"Metapod",
+category:"A",
+description:"A",
+type:["Bug"],
+evolvesFrom:"Caterpie",
+evolvesTo:"Butterfree",
+evolutionCost:50,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/011.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/011.png",
+canBeShiny:true,
+pokemonScale:1,
+rarity:"uncommon",
+spawnWeight:20,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain"],
+catchRate:0.7,
+escapeRate:0.2,
+fleeRate:0.03,
+stardustReward:200,
+candyReward:5,
+candyFamily:"Caterpie",
+buddyDistance:1,
+baseStats:{attack:45,defense:80,hp:137},
+fastMoves:["Tackle"],
+chargedMoves:["Struggle"]
+},
+
+Butterfree:{
+dex:12,
+name:"Butterfree",
+category:"A",
+description:"A",
+type:["Bug","Flying"],
+evolvesFrom:"Metapod",
+evolvesTo:null,
+evolutionCost:null,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/012.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/012.png",
+canBeShiny:true,
+pokemonScale:1.4,
+rarity:"rare",
+spawnWeight:8,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain","windy"],
+catchRate:0.45,
+escapeRate:0.35,
+fleeRate:0.08,
+stardustReward:500,
+candyReward:10,
+candyFamily:"Caterpie",
+buddyDistance:3,
+baseStats:{attack:167,defense:137,hp:155},
+fastMoves:["BugBite","Confusion"],
+chargedMoves:["BugBuzz","AerialAce"]
+},
+
+Weedle:{
+dex:13,
+name:"Weedle",
+category:"A",
+description:"A",
+type:["Bug","Poison"],
+evolvesFrom:null,
+evolvesTo:"Kakuna",
+evolutionCost:12,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/013.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/013.png",
+canBeShiny:true,
+pokemonScale:0.8,
+rarity:"common",
+spawnWeight:45,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain","cloudy"],
+catchRate:0.9,
+escapeRate:0.1,
+fleeRate:0.01,
+stardustReward:100,
+candyReward:3,
+candyFamily:"Weedle",
+buddyDistance:1,
+baseStats:{attack:63,defense:50,hp:120},
+fastMoves:["PoisonJab","BugBite"],
+chargedMoves:["CrossPoison"]
+},
+
+Kakuna:{
+dex:14,
+name:"Kakuna",
+category:"A",
+description:"A",
+type:["Bug","Poison"],
+evolvesFrom:"Weedle",
+evolvesTo:"Beedrill",
+evolutionCost:50,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/014.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/014.png",
+canBeShiny:true,
+pokemonScale:1,
+rarity:"uncommon",
+spawnWeight:20,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain","cloudy"],
+catchRate:0.7,
+escapeRate:0.2,
+fleeRate:0.03,
+stardustReward:200,
+candyReward:5,
+candyFamily:"Weedle",
+buddyDistance:1,
+baseStats:{attack:46,defense:75,hp:128},
+fastMoves:["BugBite"],
+chargedMoves:["Struggle"]
+},
+
+Beedrill:{
+dex:15,
+name:"Beedrill",
+category:"A",
+description:"A",
+type:["Bug","Poison"],
+evolvesFrom:"Kakuna",
+evolvesTo:null,
+evolutionCost:null,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/015.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/015.png",
+canBeShiny:true,
+pokemonScale:1.4,
+rarity:"rare",
+spawnWeight:8,
+spawnTime:["day"],
+biomes:["forest"],
+weatherBoost:["rain","cloudy"],
+catchRate:0.45,
+escapeRate:0.35,
+fleeRate:0.08,
+stardustReward:500,
+candyReward:10,
+candyFamily:"Weedle",
+buddyDistance:3,
+baseStats:{attack:169,defense:130,hp:163},
+fastMoves:["PoisonJab","BugBite"],
+chargedMoves:["XScissor","SludgeBomb"]
+},
+
+Pidgey:{
+dex:16,
+name:"Pidgey",
+category:"A",
+description:"A",
+type:["Normal","Flying"],
+evolvesFrom:null,
+evolvesTo:"Pidgeotto",
+evolutionCost:12,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/016.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/016.png",
+canBeShiny:true,
+pokemonScale:0.9,
+rarity:"common",
+spawnWeight:50,
+spawnTime:["day"],
+biomes:["grass"],
+weatherBoost:["partlyCloudy","windy"],
+catchRate:0.85,
+escapeRate:0.12,
+fleeRate:0.01,
+stardustReward:100,
+candyReward:3,
+candyFamily:"Pidgey",
+buddyDistance:1,
+baseStats:{attack:85,defense:73,hp:120},
+fastMoves:["QuickAttack","WingAttack"],
+chargedMoves:["AerialAce"]
+},
+
+Pidgeotto:{
+dex:17,
+name:"Pidgeotto",
+category:"A",
+description:"A",
+type:["Normal","Flying"],
+evolvesFrom:"Pidgey",
+evolvesTo:"Pidgeot",
+evolutionCost:50,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/017.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/017.png",
+canBeShiny:true,
+pokemonScale:1.2,
+rarity:"uncommon",
+spawnWeight:18,
+spawnTime:["day"],
+biomes:["grass"],
+weatherBoost:["partlyCloudy","windy"],
+catchRate:0.65,
+escapeRate:0.22,
+fleeRate:0.04,
+stardustReward:300,
+candyReward:5,
+candyFamily:"Pidgey",
+buddyDistance:1,
+baseStats:{attack:117,defense:105,hp:160},
+fastMoves:["WingAttack","AirSlash"],
+chargedMoves:["AerialAce","Twister"]
+},
+
+Pidgeot:{
+dex:18,
+name:"Pidgeot",
+category:"A",
+description:"A",
+type:["Normal","Flying"],
+evolvesFrom:"Pidgeotto",
+evolvesTo:null,
+evolutionCost:null,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/018.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/018.png",
+canBeShiny:true,
+pokemonScale:1.7,
+rarity:"rare",
+spawnWeight:5,
+spawnTime:["day"],
+biomes:["grass"],
+weatherBoost:["partlyCloudy","windy"],
+catchRate:0.4,
+escapeRate:0.35,
+fleeRate:0.1,
+stardustReward:600,
+candyReward:10,
+candyFamily:"Pidgey",
+buddyDistance:3,
+baseStats:{attack:166,defense:154,hp:195},
+fastMoves:["AirSlash","WingAttack"],
+chargedMoves:["BraveBird","AerialAce"]
+},
+
+Rattata:{
+dex:19,
+name:"Rattata",
+category:"A",
+description:"A",
+type:["Normal"],
+evolvesFrom:null,
+evolvesTo:"Raticate",
+evolutionCost:25,
+image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/019.png",
+shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/019.png",
+canBeShiny:true,
+pokemonScale:0.8,
+rarity:"common",
+spawnWeight:50,
+spawnTime:["night"],
+biomes:["city","grass"],
+weatherBoost:["partlyCloudy"],
+catchRate:0.85,
+escapeRate:0.12,
+fleeRate:0.01,
+stardustReward:100,
+candyReward:3,
+candyFamily:"Rattata",
+buddyDistance:1,
+baseStats:{attack:103,defense:70,hp:102},
+fastMoves:["QuickAttack","Bite"],
+chargedMoves:["BodySlam","HyperBeam"]
+},
+Raticate:{dex:20,name:"Raticate",category:"A",description:"A",type:["Normal"],evolvesFrom:"Rattata",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/020.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/020.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:15,spawnTime:["night"],biomes:["city","grass"],weatherBoost:["partlyCloudy"],catchRate:0.55,escapeRate:0.25,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Rattata",buddyDistance:1,baseStats:{attack:161,defense:139,hp:146},fastMoves:["QuickAttack","Bite"],chargedMoves:["HyperBeam","Crunch"]},
+Spearow:{dex:21,name:"Spearow",category:"A",description:"A",type:["Normal","Flying"],evolvesFrom:null,evolvesTo:"Fearow",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/021.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/021.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:40,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy","windy"],catchRate:0.8,escapeRate:0.15,fleeRate:0.02,stardustReward:100,candyReward:3,candyFamily:"Spearow",buddyDistance:1,baseStats:{attack:112,defense:60,hp:120},fastMoves:["Peck","QuickAttack"],chargedMoves:["AerialAce"]},
+Fearow:{dex:22,name:"Fearow",category:"A",description:"A",type:["Normal","Flying"],evolvesFrom:"Spearow",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/022.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/022.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:8,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy","windy"],catchRate:0.45,escapeRate:0.35,fleeRate:0.08,stardustReward:500,candyReward:10,candyFamily:"Spearow",buddyDistance:3,baseStats:{attack:182,defense:133,hp:163},fastMoves:["Peck","AirSlash"],chargedMoves:["DrillRun","AerialAce"]},
+Ekans:{dex:23,name:"Ekans",category:"A",description:"A",type:["Poison"],evolvesFrom:null,evolvesTo:"Arbok",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/023.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/023.png",canBeShiny:true,pokemonScale:1,pokemonScale:1,rarity:"common",spawnWeight:35,spawnTime:["night"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Ekans",buddyDistance:1,baseStats:{attack:110,defense:97,hp:111},fastMoves:["PoisonJab","Acid"],chargedMoves:["SludgeBomb","CrossPoison"]},
+Arbok:{dex:24,name:"Arbok",category:"A",description:"A",type:["Poison"],evolvesFrom:"Ekans",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/024.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/024.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:8,spawnTime:["night"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.45,escapeRate:0.3,fleeRate:0.07,stardustReward:500,candyReward:10,candyFamily:"Ekans",buddyDistance:3,baseStats:{attack:167,defense:153,hp:155},fastMoves:["PoisonJab","Bite"],chargedMoves:["SludgeWave","Crunch"]},
+Pikachu:{dex:25,name:"Pikachu",category:"A",description:"A",type:["Electric"],evolvesFrom:"Pichu",evolvesTo:"Raichu",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/025.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/025.png",canBeShiny:true,pokemonScale:1,rarity:"uncommon",spawnWeight:20,spawnTime:["day"],biomes:["forest"],weatherBoost:["rain"],catchRate:0.6,escapeRate:0.25,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Pikachu",buddyDistance:1,baseStats:{attack:112,defense:96,hp:111},fastMoves:["ThunderShock","QuickAttack"],chargedMoves:["Thunderbolt","WildCharge"]},
+Raichu:{dex:26,name:"Raichu",category:"A",description:"A",type:["Electric"],evolvesFrom:"Pikachu",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/026.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/026.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:6,spawnTime:["day"],biomes:["forest"],weatherBoost:["rain"],catchRate:0.35,escapeRate:0.35,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Pikachu",buddyDistance:3,baseStats:{attack:193,defense:151,hp:155},fastMoves:["Spark","VoltSwitch"],chargedMoves:["ThunderPunch","WildCharge","Thunder"]},
+Sandshrew:{dex:27,name:"Sandshrew",category:"A",description:"A",type:["Ground"],evolvesFrom:null,evolvesTo:"Sandslash",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/027.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/027.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["desert"],weatherBoost:["sunny"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Sandshrew",buddyDistance:1,baseStats:{attack:126,defense:120,hp:137},fastMoves:["MudShot","Scratch"],chargedMoves:["Bulldoze","RockSlide"]},
+Sandslash:{dex:28,name:"Sandslash",category:"A",description:"A",type:["Ground"],evolvesFrom:"Sandshrew",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/028.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/028.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:7,spawnTime:["day"],biomes:["desert"],weatherBoost:["sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.06,stardustReward:500,candyReward:10,candyFamily:"Sandshrew",buddyDistance:3,baseStats:{attack:182,defense:175,hp:181},fastMoves:["MudSlap","MetalClaw"],chargedMoves:["Earthquake","RockSlide"]},
+NidoranF:{dex:29,name:"NidoranF",category:"A",description:"A",type:["Poison"],evolvesFrom:null,evolvesTo:"Nidorina",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/029.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/029.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"NidoranF",buddyDistance:1,baseStats:{attack:86,defense:89,hp:146},fastMoves:["PoisonJab","Scratch"],chargedMoves:["SludgeBomb","BodySlam"]},
+Nidorina:{dex:30,name:"Nidorina",category:"A",description:"A",type:["Poison"],evolvesFrom:"NidoranF",evolvesTo:"Nidoqueen",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/030.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/030.png",canBeShiny:true,pokemonScale:1.2,rarity:"uncommon",spawnWeight:15,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"NidoranF",buddyDistance:1,baseStats:{attack:117,defense:120,hp:172},fastMoves:["PoisonJab","Bite"],chargedMoves:["SludgeBomb","Dig"]},
+Nidoqueen:{dex:31,name:"Nidoqueen",category:"A",description:"A",type:["Poison","Ground"],evolvesFrom:"Nidorina",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/031.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/031.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:6,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy","sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"NidoranF",buddyDistance:3,baseStats:{attack:180,defense:173,hp:207},fastMoves:["PoisonJab","MudSlap"],chargedMoves:["Earthquake","SludgeWave","StoneEdge"]},
+NidoranM:{dex:32,name:"NidoranM",category:"A",description:"A",type:["Poison"],evolvesFrom:null,evolvesTo:"Nidorino",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/032.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/032.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"NidoranM",buddyDistance:1,baseStats:{attack:105,defense:76,hp:130},fastMoves:["PoisonJab","Peck"],chargedMoves:["CrossPoison","BodySlam"]},
+Nidorino:{dex:33,name:"Nidorino",category:"A",description:"A",type:["Poison"],evolvesFrom:"NidoranM",evolvesTo:"Nidoking",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/033.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/033.png",canBeShiny:true,pokemonScale:1.2,rarity:"uncommon",spawnWeight:15,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"NidoranM",buddyDistance:1,baseStats:{attack:137,defense:111,hp:156},fastMoves:["PoisonJab","Bite"],chargedMoves:["SludgeBomb","Dig"]},
+Nidoking:{dex:34,name:"Nidoking",category:"A",description:"A",type:["Poison","Ground"],evolvesFrom:"Nidorino",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/034.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/034.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:6,spawnTime:["day"],biomes:["grass"],weatherBoost:["cloudy","sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"NidoranM",buddyDistance:3,baseStats:{attack:204,defense:156,hp:191},fastMoves:["PoisonJab","MudSlap"],chargedMoves:["Earthquake","Megahorn","StoneEdge"]},
+Clefairy:{dex:35,name:"Clefairy",category:"A",description:"A",type:["Fairy"],evolvesFrom:"Cleffa",evolvesTo:"Clefable",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/035.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/035.png",canBeShiny:true,pokemonScale:1,rarity:"uncommon",spawnWeight:20,spawnTime:["night"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.65,escapeRate:0.2,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Clefairy",buddyDistance:1,baseStats:{attack:107,defense:108,hp:172},fastMoves:["Charm","Pound"],chargedMoves:["BodySlam","Moonblast"]},
+Clefable:{dex:36,name:"Clefable",category:"A",description:"A",type:["Fairy"],evolvesFrom:"Clefairy",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/036.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/036.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Clefairy",buddyDistance:3,baseStats:{attack:178,defense:162,hp:216},fastMoves:["Charm","ZenHeadbutt"],chargedMoves:["Moonblast","Psychic","DazzlingGleam"]},
+Vulpix:{dex:37,name:"Vulpix",category:"A",description:"A",type:["Fire"],evolvesFrom:null,evolvesTo:"Ninetales",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/037.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/037.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Vulpix",buddyDistance:1,baseStats:{attack:96,defense:109,hp:116},fastMoves:["Ember","QuickAttack"],chargedMoves:["Flamethrower","FireBlast"]},
+Ninetales:{dex:38,name:"Ninetales",category:"A",description:"A",type:["Fire"],evolvesFrom:"Vulpix",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/038.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/038.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Vulpix",buddyDistance:3,baseStats:{attack:169,defense:190,hp:177},fastMoves:["FireSpin","Ember"],chargedMoves:["Flamethrower","FireBlast","HeatWave"]},
+Jigglypuff:{dex:39,name:"Jigglypuff",category:"A",description:"A",type:["Normal","Fairy"],evolvesFrom:"Igglybuff",evolvesTo:"Wigglytuff",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/039.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/039.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:25,spawnTime:["night"],biomes:["grass"],weatherBoost:["partlyCloudy","cloudy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Jigglypuff",buddyDistance:1,baseStats:{attack:80,defense:41,hp:251},fastMoves:["Pound","Charm"],chargedMoves:["BodySlam","DazzlingGleam"]},
+Wigglytuff:{dex:40,name:"Wigglytuff",category:"A",description:"A",type:["Normal","Fairy"],evolvesFrom:"Jigglypuff",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/040.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/040.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["grass"],weatherBoost:["partlyCloudy","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Jigglypuff",buddyDistance:3,baseStats:{attack:156,defense:90,hp:295},fastMoves:["Charm","Pound"],chargedMoves:["PlayRough","HyperBeam","DazzlingGleam"]},
+Zubat:{dex:41,name:"Zubat",category:"A",description:"A",type:["Poison","Flying"],evolvesFrom:null,evolvesTo:"Golbat",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/041.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/041.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:40,spawnTime:["night"],biomes:["cave"],weatherBoost:["cloudy","windy"],catchRate:0.8,escapeRate:0.15,fleeRate:0.02,stardustReward:100,candyReward:3,candyFamily:"Zubat",buddyDistance:1,baseStats:{attack:83,defense:73,hp:120},fastMoves:["Bite","QuickAttack"],chargedMoves:["PoisonFang","AerialAce"]},
+Golbat:{dex:42,name:"Golbat",category:"A",description:"A",type:["Poison","Flying"],evolvesFrom:"Zubat",evolvesTo:"Crobat",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/042.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/042.png",canBeShiny:true,pokemonScale:1.5,rarity:"uncommon",spawnWeight:15,spawnTime:["night"],biomes:["cave"],weatherBoost:["cloudy","windy"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Zubat",buddyDistance:1,baseStats:{attack:161,defense:150,hp:181},fastMoves:["WingAttack","Bite"],chargedMoves:["ShadowBall","PoisonFang","AirCutter"]},
+Oddish:{dex:43,name:"Oddish",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:null,evolvesTo:"Gloom",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/043.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/043.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:35,spawnTime:["night"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Oddish",buddyDistance:1,baseStats:{attack:131,defense:112,hp:128},fastMoves:["RazorLeaf","Acid"],chargedMoves:["SludgeBomb","SeedBomb"]},
+Gloom:{dex:44,name:"Gloom",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:"Oddish",evolvesTo:"Vileplume",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/044.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/044.png",canBeShiny:true,pokemonScale:1.2,rarity:"uncommon",spawnWeight:15,spawnTime:["night"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Oddish",buddyDistance:1,baseStats:{attack:153,defense:136,hp:155},fastMoves:["RazorLeaf","Acid"],chargedMoves:["SludgeBomb","PetalBlizzard"]},
+Vileplume:{dex:45,name:"Vileplume",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:"Gloom",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/045.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/045.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Oddish",buddyDistance:3,baseStats:{attack:202,defense:167,hp:181},fastMoves:["RazorLeaf","Acid"],chargedMoves:["SolarBeam","SludgeBomb","Moonblast"]},
+Paras:{dex:46,name:"Paras",category:"A",description:"A",type:["Bug","Grass"],evolvesFrom:null,evolvesTo:"Parasect",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/046.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/046.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:30,spawnTime:["night"],biomes:["forest"],weatherBoost:["rain","sunny"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Paras",buddyDistance:1,baseStats:{attack:121,defense:99,hp:111},fastMoves:["BugBite","Scratch"],chargedMoves:["XScissor","SeedBomb"]},
+Parasect:{dex:47,name:"Parasect",category:"A",description:"A",type:["Bug","Grass"],evolvesFrom:"Paras",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/047.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/047.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:12,spawnTime:["night"],biomes:["forest"],weatherBoost:["rain","sunny"],catchRate:0.5,escapeRate:0.25,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Paras",buddyDistance:1,baseStats:{attack:165,defense:146,hp:155},fastMoves:["BugBite","FuryCutter"],chargedMoves:["XScissor","SolarBeam","CrossPoison"]},
+Venonat:{dex:48,name:"Venonat",category:"A",description:"A",type:["Bug","Poison"],evolvesFrom:null,evolvesTo:"Venomoth",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/048.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/048.png",canBeShiny:true,pokemonScale:1,pokemonScale:1,rarity:"common",spawnWeight:28,spawnTime:["night"],biomes:["forest"],weatherBoost:["rain","cloudy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Venonat",buddyDistance:1,baseStats:{attack:100,defense:100,hp:155},fastMoves:["BugBite","Confusion"],chargedMoves:["PoisonFang","Psybeam"]},
+Venomoth:{dex:49,name:"Venomoth",category:"A",description:"A",type:["Bug","Poison"],evolvesFrom:"Venonat",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/049.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/049.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["forest"],weatherBoost:["rain","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Venonat",buddyDistance:3,baseStats:{attack:179,defense:143,hp:172},fastMoves:["Confusion","BugBite"],chargedMoves:["BugBuzz","Psychic","PoisonFang"]},
+Diglett:{dex:50,name:"Diglett",category:"A",description:"A",type:["Ground"],evolvesFrom:null,evolvesTo:"Dugtrio",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/050.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/050.png",canBeShiny:true,pokemonScale:0.8,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["desert","cave"],weatherBoost:["sunny"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Diglett",buddyDistance:1,baseStats:{attack:109,defense:78,hp:67},fastMoves:["MudShot","Scratch"],chargedMoves:["Dig","RockSlide"]},
+Dugtrio:{dex:51,name:"Dugtrio",category:"A",description:"A",type:["Ground"],evolvesFrom:"Diglett",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/051.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/051.png",canBeShiny:true,pokemonScale:1.2,rarity:"uncommon",spawnWeight:10,spawnTime:["day"],biomes:["desert","cave"],weatherBoost:["sunny"],catchRate:0.45,escapeRate:0.3,fleeRate:0.06,stardustReward:300,candyReward:5,candyFamily:"Diglett",buddyDistance:1,baseStats:{attack:167,defense:134,hp:111},fastMoves:["MudShot","SuckerPunch"],chargedMoves:["Earthquake","StoneEdge","MudBomb"]},
+Meowth:{dex:52,name:"Meowth",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:"Persian",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/052.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/052.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:35,spawnTime:["night"],biomes:["city"],weatherBoost:["partlyCloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Meowth",buddyDistance:1,baseStats:{attack:92,defense:78,hp:120},fastMoves:["Scratch","Bite"],chargedMoves:["BodySlam","DarkPulse"]},
+Persian:{dex:53,name:"Persian",category:"A",description:"A",type:["Normal"],evolvesFrom:"Meowth",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/053.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/053.png",canBeShiny:true,pokemonScale:1.3,rarity:"rare",spawnWeight:6,spawnTime:["night"],biomes:["city"],weatherBoost:["partlyCloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.06,stardustReward:500,candyReward:10,candyFamily:"Meowth",buddyDistance:3,baseStats:{attack:150,defense:136,hp:163},fastMoves:["Scratch","FeintAttack"],chargedMoves:["DarkPulse","PlayRough","BodySlam"]},
+Psyduck:{dex:54,name:"Psyduck",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Golduck",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/054.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/054.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Psyduck",buddyDistance:1,baseStats:{attack:122,defense:95,hp:137},fastMoves:["WaterGun","ZenHeadbutt"],chargedMoves:["AquaTail","Psychic"]},
+Golduck:{dex:55,name:"Golduck",category:"A",description:"A",type:["Water"],evolvesFrom:"Psyduck",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/055.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/055.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:7,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.4,escapeRate:0.3,fleeRate:0.06,stardustReward:500,candyReward:10,candyFamily:"Psyduck",buddyDistance:3,baseStats:{attack:191,defense:162,hp:190},fastMoves:["WaterGun","Confusion"],chargedMoves:["HydroPump","IceBeam","Psychic"]},
+Mankey:{dex:56,name:"Mankey",category:"A",description:"A",type:["Fighting"],evolvesFrom:null,evolvesTo:"Primeape",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/056.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/056.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Mankey",buddyDistance:1,baseStats:{attack:148,defense:82,hp:120},fastMoves:["KarateChop","Scratch"],chargedMoves:["CrossChop","BrickBreak"]},
+Primeape:{dex:57,name:"Primeape",category:"A",description:"A",type:["Fighting"],evolvesFrom:"Mankey",evolvesTo:"Annihilape",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/057.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/057.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:7,spawnTime:["day"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.06,stardustReward:500,candyReward:10,candyFamily:"Mankey",buddyDistance:3,baseStats:{attack:207,defense:138,hp:163},fastMoves:["Counter","KarateChop"],chargedMoves:["CloseCombat","CrossChop","NightSlash"]},
+Growlithe:{dex:58,name:"Growlithe",category:"A",description:"A",type:["Fire"],evolvesFrom:null,evolvesTo:"Arcanine",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/058.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/058.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Growlithe",buddyDistance:1,baseStats:{attack:136,defense:93,hp:146},fastMoves:["Ember","Bite"],chargedMoves:["Flamethrower","Crunch"]},
+Arcanine:{dex:59,name:"Arcanine",category:"A",description:"A",type:["Fire"],evolvesFrom:"Growlithe",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/059.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/059.png",canBeShiny:true,pokemonScale:1.8,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.35,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Growlithe",buddyDistance:3,baseStats:{attack:227,defense:166,hp:207},fastMoves:["FireFang","Snarl"],chargedMoves:["Flamethrower","WildCharge","Crunch"]},
+Poliwag:{dex:60,name:"Poliwag",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Poliwhirl",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/060.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/060.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Poliwag",buddyDistance:1,baseStats:{attack:101,defense:82,hp:120},fastMoves:["Bubble","WaterGun"],chargedMoves:["BubbleBeam","BodySlam"]},
+Poliwhirl:{dex:61,name:"Poliwhirl",category:"A",description:"A",type:["Water"],evolvesFrom:"Poliwag",evolvesTo:"Poliwrath",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/061.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/061.png",canBeShiny:true,pokemonScale:1.2,rarity:"uncommon",spawnWeight:15,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Poliwag",buddyDistance:1,baseStats:{attack:130,defense:123,hp:163},fastMoves:["Bubble","MudShot"],chargedMoves:["HydroPump","BodySlam","BubbleBeam"]},
+Poliwrath:{dex:62,name:"Poliwrath",category:"A",description:"A",type:["Water","Fighting"],evolvesFrom:"Poliwhirl",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/062.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/062.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:6,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Poliwag",buddyDistance:3,baseStats:{attack:182,defense:184,hp:207},fastMoves:["Counter","Bubble"],chargedMoves:["DynamicPunch","HydroPump","IcePunch"]},
+Abra:{dex:63,name:"Abra",category:"A",description:"A",type:["Psychic"],evolvesFrom:null,evolvesTo:"Kadabra",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/063.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/063.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:20,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.5,escapeRate:0.5,fleeRate:0.3,stardustReward:100,candyReward:3,candyFamily:"Abra",buddyDistance:1,baseStats:{attack:195,defense:82,hp:93},fastMoves:["ZenHeadbutt"],chargedMoves:["Psyshock"]},
+Kadabra:{dex:64,name:"Kadabra",category:"A",description:"A",type:["Psychic"],evolvesFrom:"Abra",evolvesTo:"Alakazam",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/064.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/064.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:10,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.4,escapeRate:0.35,fleeRate:0.12,stardustReward:300,candyReward:5,candyFamily:"Abra",buddyDistance:1,baseStats:{attack:232,defense:117,hp:120},fastMoves:["Confusion","PsychoCut"],chargedMoves:["Psychic","ShadowBall","Psybeam"]},
+Alakazam:{dex:65,name:"Alakazam",category:"A",description:"A",type:["Psychic"],evolvesFrom:"Kadabra",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/065.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/065.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.3,escapeRate:0.35,fleeRate:0.1,stardustReward:600,candyReward:10,candyFamily:"Abra",buddyDistance:3,baseStats:{attack:271,defense:167,hp:146},fastMoves:["Confusion","PsychoCut"],chargedMoves:["FutureSight","ShadowBall","Psystrike"]},
+Machop:{dex:66,name:"Machop",category:"A",description:"A",type:["Fighting"],evolvesFrom:null,evolvesTo:"Machoke",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/066.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/066.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Machop",buddyDistance:1,baseStats:{attack:137,defense:82,hp:172},fastMoves:["KarateChop","RockSmash"],chargedMoves:["BrickBreak","CrossChop"]},
+Machoke:{dex:67,name:"Machoke",category:"A",description:"A",type:["Fighting"],evolvesFrom:"Machop",evolvesTo:"Machamp",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/067.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/067.png",canBeShiny:true,pokemonScale:1.5,rarity:"uncommon",spawnWeight:12,spawnTime:["day"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.55,escapeRate:0.25,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Machop",buddyDistance:1,baseStats:{attack:177,defense:125,hp:190},fastMoves:["KarateChop","LowKick"],chargedMoves:["DynamicPunch","BrickBreak","CrossChop"]},
+Machamp:{dex:68,name:"Machamp",category:"A",description:"A",type:["Fighting"],evolvesFrom:"Machoke",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/068.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/068.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["cloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Machop",buddyDistance:3,baseStats:{attack:234,defense:159,hp:207},fastMoves:["Counter","KarateChop"],chargedMoves:["DynamicPunch","CloseCombat","RockSlide"]},
+Bellsprout:{dex:69,name:"Bellsprout",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:null,evolvesTo:"Weepinbell",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/069.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/069.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Bellsprout",buddyDistance:1,baseStats:{attack:139,defense:61,hp:137},fastMoves:["VineWhip","Acid"],chargedMoves:["PowerWhip","SludgeBomb"]},
+Weepinbell:{dex:70,name:"Weepinbell",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:"Bellsprout",evolvesTo:"Victreebel",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/070.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/070.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:12,spawnTime:["day"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Bellsprout",buddyDistance:1,baseStats:{attack:172,defense:92,hp:163},fastMoves:["RazorLeaf","Acid"],chargedMoves:["PowerWhip","SludgeBomb","SeedBomb"]},
+Victreebel:{dex:71,name:"Victreebel",category:"A",description:"A",type:["Grass","Poison"],evolvesFrom:"Weepinbell",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/071.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/071.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["grass","forest"],weatherBoost:["sunny","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Bellsprout",buddyDistance:3,baseStats:{attack:207,defense:135,hp:190},fastMoves:["RazorLeaf","Acid"],chargedMoves:["SolarBeam","SludgeBomb","LeafBlade"]},
+Tentacool:{dex:72,name:"Tentacool",category:"A",description:"A",type:["Water","Poison"],evolvesFrom:null,evolvesTo:"Tentacruel",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/072.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/072.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","cloudy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Tentacool",buddyDistance:1,baseStats:{attack:97,defense:149,hp:120},fastMoves:["Bubble","PoisonJab"],chargedMoves:["BubbleBeam","WaterPulse","SludgeWave"]},
+Tentacruel:{dex:73,name:"Tentacruel",category:"A",description:"A",type:["Water","Poison"],evolvesFrom:"Tentacool",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/073.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/073.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Tentacool",buddyDistance:3,baseStats:{attack:166,defense:209,hp:190},fastMoves:["PoisonJab","Bubble"],chargedMoves:["HydroPump","SludgeWave","Blizzard"]},
+Geodude:{dex:74,name:"Geodude",category:"A",description:"A",type:["Rock","Ground"],evolvesFrom:null,evolvesTo:"Graveler",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/074.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/074.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:35,spawnTime:["day"],biomes:["mountain","cave"],weatherBoost:["partlyCloudy","sunny"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Geodude",buddyDistance:1,baseStats:{attack:132,defense:132,hp:120},fastMoves:["RockThrow","Tackle"],chargedMoves:["RockSlide","Dig"]},
+Graveler:{dex:75,name:"Graveler",category:"A",description:"A",type:["Rock","Ground"],evolvesFrom:"Geodude",evolvesTo:"Golem",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/075.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/075.png",canBeShiny:true,pokemonScale:1.4,rarity:"uncommon",spawnWeight:12,spawnTime:["day"],biomes:["mountain","cave"],weatherBoost:["partlyCloudy","sunny"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Geodude",buddyDistance:1,baseStats:{attack:164,defense:164,hp:146},fastMoves:["RockThrow","MudSlap"],chargedMoves:["StoneEdge","Dig","RockBlast"]},
+Golem:{dex:76,name:"Golem",category:"A",description:"A",type:["Rock","Ground"],evolvesFrom:"Graveler",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/076.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/076.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["mountain","cave"],weatherBoost:["partlyCloudy","sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Geodude",buddyDistance:3,baseStats:{attack:211,defense:198,hp:190},fastMoves:["RockThrow","MudSlap"],chargedMoves:["StoneEdge","Earthquake","RockBlast"]},
+Ponyta:{dex:77,name:"Ponyta",category:"A",description:"A",type:["Fire"],evolvesFrom:null,evolvesTo:"Rapidash",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/077.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/077.png",canBeShiny:true,pokemonScale:1.3,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["grass","mountain"],weatherBoost:["sunny"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Ponyta",buddyDistance:1,baseStats:{attack:170,defense:127,hp:137},fastMoves:["Ember","FireSpin"],chargedMoves:["FlameCharge","FireBlast","Swift"]},
+Rapidash:{dex:78,name:"Rapidash",category:"A",description:"A",type:["Fire"],evolvesFrom:"Ponyta",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/078.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/078.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["grass","mountain"],weatherBoost:["sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Ponyta",buddyDistance:3,baseStats:{attack:207,defense:162,hp:163},fastMoves:["FireSpin","LowKick"],chargedMoves:["FireBlast","DrillRun","FlameCharge"]},
+Slowpoke:{dex:79,name:"Slowpoke",category:"A",description:"A",type:["Water","Psychic"],evolvesFrom:null,evolvesTo:"Slowbro",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/079.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/079.png",canBeShiny:true,pokemonScale:1.3,rarity:"common",spawnWeight:25,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","windy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Slowpoke",buddyDistance:1,baseStats:{attack:109,defense:98,hp:207},fastMoves:["WaterGun","Confusion"],chargedMoves:["Psychic","WaterPulse","IceBeam"]},
+Slowbro:{dex:80,name:"Slowbro",category:"A",description:"A",type:["Water","Psychic"],evolvesFrom:"Slowpoke",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/080.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/080.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","windy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Slowpoke",buddyDistance:3,baseStats:{attack:177,defense:180,hp:216},fastMoves:["Confusion","WaterGun"],chargedMoves:["Psychic","IceBeam","WaterPulse"]},
+Magnemite:{dex:81,name:"Magnemite",category:"A",description:"A",type:["Electric","Steel"],evolvesFrom:null,evolvesTo:"Magneton",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/081.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/081.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["city","industrial"],weatherBoost:["rain","snow"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Magnemite",buddyDistance:1,baseStats:{attack:165,defense:121,hp:93},fastMoves:["ThunderShock","Spark"],chargedMoves:["Thunderbolt","MagnetBomb","Discharge"]},
+Magneton:{dex:82,name:"Magneton",category:"A",description:"A",type:["Electric","Steel"],evolvesFrom:"Magnemite",evolvesTo:"Magnezone",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/082.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/082.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:12,spawnTime:["day"],biomes:["city","industrial"],weatherBoost:["rain","snow"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Magnemite",buddyDistance:1,baseStats:{attack:223,defense:169,hp:137},fastMoves:["Spark","VoltSwitch"],chargedMoves:["WildCharge","FlashCannon","Discharge"]},
+Farfetchd:{dex:83,name:"Farfetchd",category:"A",description:"A",type:["Normal","Flying"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/083.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/083.png",canBeShiny:true,pokemonScale:1.2,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy","windy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:500,candyReward:10,candyFamily:"Farfetchd",buddyDistance:3,baseStats:{attack:174,defense:114,hp:141},fastMoves:["AirSlash","FuryCutter"],chargedMoves:["LeafBlade","AerialAce","BraveBird"]},
+Doduo:{dex:84,name:"Doduo",category:"A",description:"A",type:["Normal","Flying"],evolvesFrom:null,evolvesTo:"Dodrio",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/084.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/084.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:30,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy","windy"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Doduo",buddyDistance:1,baseStats:{attack:158,defense:83,hp:111},fastMoves:["Peck","QuickAttack"],chargedMoves:["DrillPeck","Swift","AerialAce"]},
+Dodrio:{dex:85,name:"Dodrio",category:"A",description:"A",type:["Normal","Flying"],evolvesFrom:"Doduo",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/085.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/085.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy","windy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Doduo",buddyDistance:3,baseStats:{attack:218,defense:140,hp:155},fastMoves:["FeintAttack","AirSlash"],chargedMoves:["DrillPeck","BraveBird","Swift"]},
+Seel:{dex:86,name:"Seel",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Dewgong",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/086.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/086.png",canBeShiny:true,pokemonScale:1.2,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["water","ice"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Seel",buddyDistance:1,baseStats:{attack:85,defense:121,hp:163},fastMoves:["Lick","IceShard"],chargedMoves:["AquaTail","IcyWind","WaterPulse"]},
+Dewgong:{dex:87,name:"Dewgong",category:"A",description:"A",type:["Water","Ice"],evolvesFrom:"Seel",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/087.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/087.png",canBeShiny:true,pokemonScale:1.7,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["water","ice"],weatherBoost:["rain","snow"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Seel",buddyDistance:3,baseStats:{attack:139,defense:177,hp:207},fastMoves:["IceShard","FrostBreath"],chargedMoves:["Blizzard","IcyWind","WaterPulse"]},
+Grimer:{dex:88,name:"Grimer",category:"A",description:"A",type:["Poison"],evolvesFrom:null,evolvesTo:"Muk",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/088.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/088.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:25,spawnTime:["night"],biomes:["city","industrial"],weatherBoost:["cloudy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Grimer",buddyDistance:1,baseStats:{attack:135,defense:90,hp:190},fastMoves:["PoisonJab","Bite"],chargedMoves:["SludgeBomb","MudBomb","DarkPulse"]},
+Muk:{dex:89,name:"Muk",category:"A",description:"A",type:["Poison"],evolvesFrom:"Grimer",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/089.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/089.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["city","industrial"],weatherBoost:["cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Grimer",buddyDistance:3,baseStats:{attack:190,defense:172,hp:233},fastMoves:["PoisonJab","Snarl"],chargedMoves:["SludgeWave","DarkPulse","ThunderPunch"]},
+Shellder:{dex:90,name:"Shellder",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Cloyster",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/090.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/090.png",canBeShiny:true,pokemonScale:1,pokemonScale:1,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Shellder",buddyDistance:1,baseStats:{attack:116,defense:134,hp:102},fastMoves:["IceShard","Tackle"],chargedMoves:["BubbleBeam","IcyWind","WaterPulse"]},
+Cloyster:{dex:91,name:"Cloyster",category:"A",description:"A",type:["Water","Ice"],evolvesFrom:"Shellder",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/091.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/091.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["water","ice"],weatherBoost:["rain","snow"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Shellder",buddyDistance:3,baseStats:{attack:186,defense:256,hp:137},fastMoves:["FrostBreath","IceShard"],chargedMoves:["Avalanche","HydroPump","IcyWind"]},
+Gastly:{dex:92,name:"Gastly",category:"A",description:"A",type:["Ghost","Poison"],evolvesFrom:null,evolvesTo:"Haunter",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/092.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/092.png",canBeShiny:true,pokemonScale:1,pokemonScale:1,rarity:"common",spawnWeight:30,spawnTime:["night"],biomes:["cave","city"],weatherBoost:["fog","cloudy"],catchRate:0.7,escapeRate:0.2,fleeRate:0.04,stardustReward:100,candyReward:3,candyFamily:"Gastly",buddyDistance:1,baseStats:{attack:186,defense:67,hp:102},fastMoves:["Lick","SuckerPunch"],chargedMoves:["ShadowBall","DarkPulse","SludgeBomb"]},
+Haunter:{dex:93,name:"Haunter",category:"A",description:"A",type:["Ghost","Poison"],evolvesFrom:"Gastly",evolvesTo:"Gengar",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/093.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/093.png",canBeShiny:true,pokemonScale:1.4,rarity:"uncommon",spawnWeight:10,spawnTime:["night"],biomes:["cave","city"],weatherBoost:["fog","cloudy"],catchRate:0.55,escapeRate:0.25,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Gastly",buddyDistance:1,baseStats:{attack:223,defense:107,hp:128},fastMoves:["ShadowClaw","Lick"],chargedMoves:["ShadowBall","SludgeBomb","DarkPulse"]},
+Gengar:{dex:94,name:"Gengar",category:"A",description:"A",type:["Ghost","Poison"],evolvesFrom:"Haunter",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/094.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/094.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["night"],biomes:["cave","city"],weatherBoost:["fog","cloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Gastly",buddyDistance:3,baseStats:{attack:261,defense:149,hp:155},fastMoves:["ShadowClaw","Hex"],chargedMoves:["ShadowBall","SludgeBomb","DarkPulse"]},
+Onix:{dex:95,name:"Onix",category:"A",description:"A",type:["Rock","Ground"],evolvesFrom:null,evolvesTo:"Steelix",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/095.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/095.png",canBeShiny:true,pokemonScale:2,rarity:"uncommon",spawnWeight:15,spawnTime:["day"],biomes:["cave","mountain"],weatherBoost:["partlyCloudy","sunny"],catchRate:0.6,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Onix",buddyDistance:3,baseStats:{attack:85,defense:232,hp:111},fastMoves:["RockThrow","Tackle"],chargedMoves:["StoneEdge","Earthquake","RockSlide"]},
+Drowzee:{dex:96,name:"Drowzee",category:"A",description:"A",type:["Psychic"],evolvesFrom:null,evolvesTo:"Hypno",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/096.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/096.png",canBeShiny:true,pokemonScale:1.2,rarity:"common",spawnWeight:25,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Drowzee",buddyDistance:1,baseStats:{attack:89,defense:136,hp:155},fastMoves:["Confusion","Pound"],chargedMoves:["Psychic","Psybeam","ShadowBall"]},
+Hypno:{dex:97,name:"Hypno",category:"A",description:"A",type:["Psychic"],evolvesFrom:"Drowzee",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/097.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/097.png",canBeShiny:true,pokemonScale:1.6,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Drowzee",buddyDistance:3,baseStats:{attack:144,defense:193,hp:198},fastMoves:["Confusion","ZenHeadbutt"],chargedMoves:["FutureSight","ShadowBall","ThunderPunch"]},
+Krabby:{dex:98,name:"Krabby",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Kingler",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/098.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/098.png",canBeShiny:true,pokemonScale:1,pokemonScale:1,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Krabby",buddyDistance:1,baseStats:{attack:181,defense:124,hp:102},fastMoves:["Bubble","MudShot"],chargedMoves:["WaterPulse","ViceGrip","BubbleBeam"]},
+Kingler:{dex:99,name:"Kingler",category:"A",description:"A",type:["Water"],evolvesFrom:"Krabby",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/099.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/099.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Krabby",buddyDistance:3,baseStats:{attack:240,defense:181,hp:146},fastMoves:["Bubble","MetalClaw"],chargedMoves:["Crabhammer","XScissor","WaterPulse"]},
+Voltorb:{dex:100,name:"Voltorb",category:"A",description:"A",type:["Electric"],evolvesFrom:null,evolvesTo:"Electrode",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/100.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/100.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:28,spawnTime:["day"],biomes:["city","industrial"],weatherBoost:["rain"],catchRate:0.75,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Voltorb",buddyDistance:1,baseStats:{attack:109,defense:111,hp:120},fastMoves:["Spark","Tackle"],chargedMoves:["Discharge","Swift","Thunderbolt"]},
+Electrode:{dex:101,name:"Electrode",category:"A",description:"A",type:["Electric"],evolvesFrom:"Voltorb",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/101.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/101.png",canBeShiny:true,pokemonScale:1.2,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["city","industrial"],weatherBoost:["rain"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Voltorb",buddyDistance:3,baseStats:{attack:173,defense:173,hp:155},fastMoves:["VoltSwitch","Spark"],chargedMoves:["WildCharge","Discharge","HyperBeam"]},
+Exeggcute:{dex:102,name:"Exeggcute",category:"A",description:"A",type:["Grass","Psychic"],evolvesFrom:null,evolvesTo:"Exeggutor",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/102.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/102.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:25,spawnTime:["day"],biomes:["grass"],weatherBoost:["sunny","windy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Exeggcute",buddyDistance:1,baseStats:{attack:107,defense:125,hp:155},fastMoves:["Confusion","BulletSeed"],chargedMoves:["SeedBomb","Psychic","AncientPower"]},
+Exeggutor:{dex:103,name:"Exeggutor",category:"A",description:"A",type:["Grass","Psychic"],evolvesFrom:"Exeggcute",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/103.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/103.png",canBeShiny:true,pokemonScale:2,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["grass"],weatherBoost:["sunny","windy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Exeggcute",buddyDistance:3,baseStats:{attack:233,defense:149,hp:216},fastMoves:["Confusion","BulletSeed"],chargedMoves:["SolarBeam","Psychic","SeedBomb"]},
+Cubone:{dex:104,name:"Cubone",category:"A",description:"A",type:["Ground"],evolvesFrom:null,evolvesTo:"Marowak",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/104.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/104.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:25,spawnTime:["night"],biomes:["mountain","cave"],weatherBoost:["sunny"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Cubone",buddyDistance:1,baseStats:{attack:90,defense:144,hp:137},fastMoves:["MudSlap","RockSmash"],chargedMoves:["BoneClub","Dig","Bulldoze"]},
+Marowak:{dex:105,name:"Marowak",category:"A",description:"A",type:["Ground"],evolvesFrom:"Cubone",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/105.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/105.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["mountain","cave"],weatherBoost:["sunny"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Cubone",buddyDistance:3,baseStats:{attack:144,defense:186,hp:155},fastMoves:["MudSlap","RockSmash"],chargedMoves:["BoneClub","Earthquake","StoneEdge"]},
+Hitmonlee:{dex:106,name:"Hitmonlee",category:"A",description:"A",type:["Fighting"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/106.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/106.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["city"],weatherBoost:["cloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:500,candyReward:10,candyFamily:"Hitmonlee",buddyDistance:3,baseStats:{attack:224,defense:181,hp:137},fastMoves:["DoubleKick","LowKick"],chargedMoves:["CloseCombat","StoneEdge","BrickBreak"]},
+Hitmonchan:{dex:107,name:"Hitmonchan",category:"A",description:"A",type:["Fighting"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/107.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/107.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["city"],weatherBoost:["cloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:500,candyReward:10,candyFamily:"Hitmonchan",buddyDistance:3,baseStats:{attack:193,defense:197,hp:137},fastMoves:["Counter","BulletPunch"],chargedMoves:["ThunderPunch","IcePunch","FirePunch"]},
+Lickitung:{dex:108,name:"Lickitung",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:"Lickilicky",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/108.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/108.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:10,spawnTime:["day"],biomes:["grass","city"],weatherBoost:["partlyCloudy"],catchRate:0.5,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Lickitung",buddyDistance:3,baseStats:{attack:108,defense:137,hp:207},fastMoves:["Lick","ZenHeadbutt"],chargedMoves:["BodySlam","HyperBeam","PowerWhip"]},
+Koffing:{dex:109,name:"Koffing",category:"A",description:"A",type:["Poison"],evolvesFrom:null,evolvesTo:"Weezing",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/109.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/109.png",canBeShiny:true,pokemonScale:1.1,rarity:"common",spawnWeight:22,spawnTime:["night"],biomes:["city","industrial"],weatherBoost:["cloudy"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Koffing",buddyDistance:1,baseStats:{attack:119,defense:141,hp:120},fastMoves:["Tackle","Acid"],chargedMoves:["SludgeBomb","DarkPulse","Thunderbolt"]},
+Weezing:{dex:110,name:"Weezing",category:"A",description:"A",type:["Poison"],evolvesFrom:"Koffing",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/110.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/110.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["city","industrial"],weatherBoost:["cloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Koffing",buddyDistance:3,baseStats:{attack:174,defense:197,hp:163},fastMoves:["Infestation","Tackle"],chargedMoves:["SludgeBomb","DarkPulse","Thunderbolt"]},
+Rhyhorn:{dex:111,name:"Rhyhorn",category:"A",description:"A",type:["Ground","Rock"],evolvesFrom:null,evolvesTo:"Rhydon",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/111.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/111.png",canBeShiny:true,pokemonScale:1.4,rarity:"common",spawnWeight:20,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny","partlyCloudy"],catchRate:0.65,escapeRate:0.2,fleeRate:0.04,stardustReward:100,candyReward:3,candyFamily:"Rhyhorn",buddyDistance:3,baseStats:{attack:140,defense:127,hp:190},fastMoves:["MudSlap","RockSmash"],chargedMoves:["Bulldoze","StoneEdge","HornAttack"]},
+Rhydon:{dex:112,name:"Rhydon",category:"A",description:"A",type:["Ground","Rock"],evolvesFrom:"Rhyhorn",evolvesTo:"Rhyperior",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/112.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/112.png",canBeShiny:true,pokemonScale:1.8,rarity:"rare",spawnWeight:5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny","partlyCloudy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Rhyhorn",buddyDistance:3,baseStats:{attack:222,defense:171,hp:233},fastMoves:["MudSlap","RockSmash"],chargedMoves:["Earthquake","StoneEdge","Megahorn"]},
+Chansey:{dex:113,name:"Chansey",category:"A",description:"A",type:["Normal"],evolvesFrom:"Happiny",evolvesTo:"Blissey",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/113.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/113.png",canBeShiny:true,pokemonScale:1.5,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["city"],weatherBoost:["partlyCloudy"],catchRate:0.3,escapeRate:0.35,fleeRate:0.1,stardustReward:1000,candyReward:15,candyFamily:"Chansey",buddyDistance:5,baseStats:{attack:60,defense:128,hp:487},fastMoves:["Pound","ZenHeadbutt"],chargedMoves:["HyperBeam","Psychic","DazzlingGleam"]},
+Tangela:{dex:114,name:"Tangela",category:"A",description:"A",type:["Grass"],evolvesFrom:null,evolvesTo:"Tangrowth",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/114.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/114.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:10,spawnTime:["day"],biomes:["grass","forest"],weatherBoost:["sunny"],catchRate:0.5,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Tangela",buddyDistance:3,baseStats:{attack:183,defense:169,hp:163},fastMoves:["VineWhip","Infestation"],chargedMoves:["PowerWhip","GrassKnot","SludgeBomb"]},
+Kangaskhan:{dex:115,name:"Kangaskhan",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/115.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/115.png",canBeShiny:true,pokemonScale:1.8,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy"],catchRate:0.3,escapeRate:0.35,fleeRate:0.1,stardustReward:1000,candyReward:15,candyFamily:"Kangaskhan",buddyDistance:5,baseStats:{attack:181,defense:165,hp:233},fastMoves:["MudSlap","LowKick"],chargedMoves:["Outrage","Crunch","PowerUpPunch"]},
+Horsea:{dex:116,name:"Horsea",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Seadra",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/116.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/116.png",canBeShiny:true,pokemonScale:0.9,rarity:"common",spawnWeight:25,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Horsea",buddyDistance:1,baseStats:{attack:129,defense:103,hp:102},fastMoves:["Bubble","WaterGun"],chargedMoves:["BubbleBeam","FlashCannon","DragonPulse"]},
+Seadra:{dex:117,name:"Seadra",category:"A",description:"A",type:["Water"],evolvesFrom:"Horsea",evolvesTo:"Kingdra",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/117.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/117.png",canBeShiny:true,pokemonScale:1.3,rarity:"uncommon",spawnWeight:10,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.5,escapeRate:0.22,fleeRate:0.04,stardustReward:300,candyReward:5,candyFamily:"Horsea",buddyDistance:3,baseStats:{attack:187,defense:156,hp:146},fastMoves:["DragonBreath","WaterGun"],chargedMoves:["HydroPump","DragonPulse","AuroraBeam"]},
+Goldeen:{dex:118,name:"Goldeen",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Seaking",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/118.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/118.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:25,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Goldeen",buddyDistance:1,baseStats:{attack:123,defense:110,hp:128},fastMoves:["Peck","MudShot"],chargedMoves:["AquaTail","WaterPulse","HornAttack"]},
+Seaking:{dex:119,name:"Seaking",category:"A",description:"A",type:["Water"],evolvesFrom:"Goldeen",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/119.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/119.png",canBeShiny:true,pokemonScale:1.4,rarity:"uncommon",spawnWeight:8,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.45,escapeRate:0.22,fleeRate:0.05,stardustReward:300,candyReward:5,candyFamily:"Goldeen",buddyDistance:3,baseStats:{attack:175,defense:147,hp:190},fastMoves:["Waterfall","Peck"],chargedMoves:["Megahorn","IcyWind","WaterPulse"]},
+Staryu:{dex:120,name:"Staryu",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Starmie",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/120.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/120.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:22,spawnTime:["night"],biomes:["water"],weatherBoost:["rain"],catchRate:0.7,escapeRate:0.18,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Staryu",buddyDistance:1,baseStats:{attack:137,defense:112,hp:102},fastMoves:["WaterGun","Tackle"],chargedMoves:["BubbleBeam","PowerGem","Swift"]},
+Starmie:{dex:121,name:"Starmie",category:"A",description:"A",type:["Water","Psychic"],evolvesFrom:"Staryu",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/121.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/121.png",canBeShiny:true,pokemonScale:1.3,rarity:"rare",spawnWeight:5,spawnTime:["night"],biomes:["water"],weatherBoost:["rain","windy"],catchRate:0.4,escapeRate:0.3,fleeRate:0.07,stardustReward:600,candyReward:10,candyFamily:"Staryu",buddyDistance:3,baseStats:{attack:210,defense:184,hp:155},fastMoves:["WaterGun","Confusion"],chargedMoves:["HydroPump","Psychic","Thunderbolt"]},
+MrMime:{dex:122,name:"MrMime",category:"A",description:"A",type:["Psychic","Fairy"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/122.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/122.png",canBeShiny:true,pokemonScale:1.5,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["city"],weatherBoost:["windy","cloudy"],catchRate:0.3,escapeRate:0.35,fleeRate:0.1,stardustReward:1000,candyReward:15,candyFamily:"MrMime",buddyDistance:5,baseStats:{attack:192,defense:205,hp:120},fastMoves:["Confusion","ZenHeadbutt"],chargedMoves:["Psychic","ShadowBall","IcePunch"]},
+Scyther:{dex:123,name:"Scyther",category:"A",description:"A",type:["Bug","Flying"],evolvesFrom:null,evolvesTo:"Scizor",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/123.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/123.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["forest"],weatherBoost:["rain","windy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Scyther",buddyDistance:5,baseStats:{attack:218,defense:170,hp:172},fastMoves:["AirSlash","FuryCutter"],chargedMoves:["XScissor","NightSlash","AerialAce"]},
+Jynx:{dex:124,name:"Jynx",category:"A",description:"A",type:["Ice","Psychic"],evolvesFrom:"Smoochum",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/124.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/124.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["night"],biomes:["ice"],weatherBoost:["snow","windy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Jynx",buddyDistance:5,baseStats:{attack:223,defense:151,hp:163},fastMoves:["FrostBreath","Confusion"],chargedMoves:["Avalanche","Psychic","DrainingKiss"]},
+Electabuzz:{dex:125,name:"Electabuzz",category:"A",description:"A",type:["Electric"],evolvesFrom:"Elekid",evolvesTo:"Electivire",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/125.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/125.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["city"],weatherBoost:["rain"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Electabuzz",buddyDistance:5,baseStats:{attack:198,defense:158,hp:163},fastMoves:["ThunderShock","LowKick"],chargedMoves:["Thunderbolt","ThunderPunch","WildCharge"]},
+Magmar:{dex:126,name:"Magmar",category:"A",description:"A",type:["Fire"],evolvesFrom:"Magby",evolvesTo:"Magmortar",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/126.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/126.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Magmar",buddyDistance:5,baseStats:{attack:206,defense:154,hp:163},fastMoves:["Ember","KarateChop"],chargedMoves:["Flamethrower","FirePunch","FireBlast"]},
+Pinsir:{dex:127,name:"Pinsir",category:"A",description:"A",type:["Bug"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/127.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/127.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["forest"],weatherBoost:["rain"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Pinsir",buddyDistance:5,baseStats:{attack:238,defense:182,hp:163},fastMoves:["BugBite","RockSmash"],chargedMoves:["XScissor","CloseCombat","ViceGrip"]},
+Tauros:{dex:128,name:"Tauros",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/128.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/128.png",canBeShiny:true,pokemonScale:1.6,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["grass"],weatherBoost:["partlyCloudy"],catchRate:0.3,escapeRate:0.35,fleeRate:0.1,stardustReward:1000,candyReward:15,candyFamily:"Tauros",buddyDistance:5,baseStats:{attack:198,defense:183,hp:181},fastMoves:["Tackle","ZenHeadbutt"],chargedMoves:["HornAttack","Earthquake","IronHead"]},
+Magikarp:{dex:129,name:"Magikarp",category:"A",description:"A",type:["Water"],evolvesFrom:null,evolvesTo:"Gyarados",evolutionCost:400,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/129.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/129.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:40,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.8,escapeRate:0.15,fleeRate:0.02,stardustReward:100,candyReward:3,candyFamily:"Magikarp",buddyDistance:1,baseStats:{attack:29,defense:85,hp:85},fastMoves:["Splash","Tackle"],chargedMoves:["Struggle"]},
+Gyarados:{dex:130,name:"Gyarados",category:"A",description:"A",type:["Water","Flying"],evolvesFrom:"Magikarp",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/130.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/130.png",canBeShiny:true,pokemonScale:2,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["water"],weatherBoost:["rain","windy"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Magikarp",buddyDistance:5,baseStats:{attack:237,defense:186,hp:216},fastMoves:["Bite","DragonBreath"],chargedMoves:["HydroPump","Crunch","Twister"]},
+Lapras:{dex:131,name:"Lapras",category:"A",description:"A",type:["Water","Ice"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/131.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/131.png",canBeShiny:true,pokemonScale:1.8,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["water","ice"],weatherBoost:["rain","snow"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Lapras",buddyDistance:5,baseStats:{attack:165,defense:174,hp:277},fastMoves:["WaterGun","IceShard"],chargedMoves:["Surf","IceBeam","Blizzard"]},
+Ditto:{dex:132,name:"Ditto",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/132.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/132.png",canBeShiny:true,pokemonScale:1,rarity:"epic",spawnWeight:1,spawnTime:["day","night"],biomes:["city","grass"],weatherBoost:["partlyCloudy"],catchRate:0.2,escapeRate:0.4,fleeRate:0.12,stardustReward:1500,candyReward:25,candyFamily:"Ditto",buddyDistance:5,baseStats:{attack:91,defense:91,hp:134},fastMoves:["Transform"],chargedMoves:["Struggle"]},
+Eevee:{dex:133,name:"Eevee",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:"Vaporeon",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/133.png",canBeShiny:true,pokemonScale:1,rarity:"common",spawnWeight:20,spawnTime:["day"],biomes:["city","grass"],weatherBoost:["partlyCloudy"],catchRate:0.6,escapeRate:0.2,fleeRate:0.03,stardustReward:100,candyReward:3,candyFamily:"Eevee",buddyDistance:3,baseStats:{attack:104,defense:114,hp:146},fastMoves:["QuickAttack","Tackle"],chargedMoves:["Swift","Dig","BodySlam"]},
+Vaporeon:{dex:134,name:"Vaporeon",category:"A",description:"A",type:["Water"],evolvesFrom:"Eevee",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/134.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/134.png",canBeShiny:true,pokemonScale:1.5,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["water"],weatherBoost:["rain"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Eevee",buddyDistance:5,baseStats:{attack:205,defense:161,hp:277},fastMoves:["WaterGun","QuickAttack"],chargedMoves:["HydroPump","AquaTail","WaterPulse"]},
+Jolteon:{dex:135,name:"Jolteon",category:"A",description:"A",type:["Electric"],evolvesFrom:"Eevee",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/135.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/135.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["city"],weatherBoost:["rain"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Eevee",buddyDistance:5,baseStats:{attack:232,defense:182,hp:163},fastMoves:["ThunderShock","VoltSwitch"],chargedMoves:["Thunderbolt","Discharge","LastResort"]},
+Flareon:{dex:136,name:"Flareon",category:"A",description:"A",type:["Fire"],evolvesFrom:"Eevee",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/136.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/136.png",canBeShiny:true,pokemonScale:1.4,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Eevee",buddyDistance:5,baseStats:{attack:246,defense:179,hp:163},fastMoves:["FireSpin","Ember"],chargedMoves:["Flamethrower","FireBlast","LastResort"]},
+Porygon:{dex:137,name:"Porygon",category:"A",description:"A",type:["Normal"],evolvesFrom:null,evolvesTo:"Porygon2",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/137.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/137.png",canBeShiny:true,pokemonScale:1.2,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["city"],weatherBoost:["partlyCloudy"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Porygon",buddyDistance:5,baseStats:{attack:153,defense:136,hp:163},fastMoves:["ChargeBeam","HiddenPower"],chargedMoves:["HyperBeam","ZapCannon","SolarBeam"]},
+Omanyte:{dex:138,name:"Omanyte",category:"A",description:"A",type:["Rock","Water"],evolvesFrom:null,evolvesTo:"Omastar",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/138.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/138.png",canBeShiny:true,pokemonScale:1.1,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["water","cave"],weatherBoost:["rain","partlyCloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Omanyte",buddyDistance:5,baseStats:{attack:155,defense:153,hp:111},fastMoves:["MudShot","WaterGun"],chargedMoves:["AncientPower","BubbleBeam","RockBlast"]},
+Omastar:{dex:139,name:"Omastar",category:"A",description:"A",type:["Rock","Water"],evolvesFrom:"Omanyte",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/139.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/139.png",canBeShiny:true,pokemonScale:1.6,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["water","cave"],weatherBoost:["rain","partlyCloudy"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Omanyte",buddyDistance:5,baseStats:{attack:207,defense:201,hp:172},fastMoves:["RockThrow","WaterGun"],chargedMoves:["HydroPump","RockSlide","AncientPower"]},
+Kabuto:{dex:140,name:"Kabuto",category:"A",description:"A",type:["Rock","Water"],evolvesFrom:null,evolvesTo:"Kabutops",evolutionCost:50,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/140.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/140.png",canBeShiny:true,pokemonScale:1.1,rarity:"rare",spawnWeight:4,spawnTime:["day"],biomes:["water","cave"],weatherBoost:["rain","partlyCloudy"],catchRate:0.35,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Kabuto",buddyDistance:5,baseStats:{attack:148,defense:140,hp:102},fastMoves:["Scratch","MudShot"],chargedMoves:["AquaJet","AncientPower","RockTomb"]},
+Kabutops:{dex:141,name:"Kabutops",category:"A",description:"A",type:["Rock","Water"],evolvesFrom:"Kabuto",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/141.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/141.png",canBeShiny:true,pokemonScale:1.5,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["water","cave"],weatherBoost:["rain","partlyCloudy"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Kabuto",buddyDistance:5,baseStats:{attack:220,defense:186,hp:155},fastMoves:["Waterfall","FuryCutter"],chargedMoves:["StoneEdge","WaterPulse","AncientPower"]},
+Aerodactyl:{dex:142,name:"Aerodactyl",category:"A",description:"A",type:["Rock","Flying"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/142.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/142.png",canBeShiny:true,pokemonScale:1.8,rarity:"epic",spawnWeight:2,spawnTime:["day"],biomes:["mountain"],weatherBoost:["partlyCloudy","windy"],catchRate:0.25,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Aerodactyl",buddyDistance:5,baseStats:{attack:221,defense:159,hp:190},fastMoves:["Bite","RockThrow"],chargedMoves:["HyperBeam","RockSlide","AncientPower"]},
+Snorlax:{dex:143,name:"Snorlax",category:"A",description:"A",type:["Normal"],evolvesFrom:"Munchlax",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/143.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/143.png",canBeShiny:true,pokemonScale:2,rarity:"legendary",spawnWeight:1,spawnTime:["day","night"],biomes:["grass","city"],weatherBoost:["partlyCloudy"],catchRate:0.2,escapeRate:0.4,fleeRate:0.12,stardustReward:2000,candyReward:25,candyFamily:"Snorlax",buddyDistance:5,baseStats:{attack:190,defense:169,hp:330},fastMoves:["Lick","ZenHeadbutt"],chargedMoves:["BodySlam","HyperBeam","Earthquake"]},
+Articuno:{dex:144,name:"Articuno",category:"A",description:"A",type:["Ice","Flying"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/144.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/144.png",canBeShiny:true,pokemonScale:1.8,rarity:"legendary",spawnWeight:0.5,spawnTime:["day"],biomes:["ice"],weatherBoost:["snow","windy"],catchRate:0.03,escapeRate:0.5,fleeRate:0.15,stardustReward:5000,candyReward:50,candyFamily:"Articuno",buddyDistance:20,baseStats:{attack:192,defense:236,hp:207},fastMoves:["IceShard","FrostBreath"],chargedMoves:["IceBeam","Blizzard","AncientPower"]},
+Zapdos:{dex:145,name:"Zapdos",category:"A",description:"A",type:["Electric","Flying"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/145.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/145.png",canBeShiny:true,pokemonScale:1.8,rarity:"legendary",spawnWeight:0.5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["rain","windy"],catchRate:0.03,escapeRate:0.5,fleeRate:0.15,stardustReward:5000,candyReward:50,candyFamily:"Zapdos",buddyDistance:20,baseStats:{attack:253,defense:185,hp:207},fastMoves:["ThunderShock","ChargeBeam"],chargedMoves:["Thunderbolt","ZapCannon","AncientPower"]},
+Moltres:{dex:146,name:"Moltres",category:"A",description:"A",type:["Fire","Flying"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/146.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/146.png",canBeShiny:true,pokemonScale:1.8,rarity:"legendary",spawnWeight:0.5,spawnTime:["day"],biomes:["mountain"],weatherBoost:["sunny","windy"],catchRate:0.03,escapeRate:0.5,fleeRate:0.15,stardustReward:5000,candyReward:50,candyFamily:"Moltres",buddyDistance:20,baseStats:{attack:251,defense:181,hp:207},fastMoves:["FireSpin","WingAttack"],chargedMoves:["FireBlast","HeatWave","AncientPower"]},
+Dratini:{dex:147,name:"Dratini",category:"A",description:"A",type:["Dragon"],evolvesFrom:null,evolvesTo:"Dragonair",evolutionCost:25,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/147.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/147.png",canBeShiny:true,pokemonScale:1.1,rarity:"rare",spawnWeight:3,spawnTime:["day"],biomes:["water"],weatherBoost:["windy"],catchRate:0.3,escapeRate:0.3,fleeRate:0.08,stardustReward:600,candyReward:10,candyFamily:"Dratini",buddyDistance:5,baseStats:{attack:119,defense:91,hp:121},fastMoves:["DragonBreath","Wrap"],chargedMoves:["AquaTail","Twister","DragonPulse"]},
+Dragonair:{dex:148,name:"Dragonair",category:"A",description:"A",type:["Dragon"],evolvesFrom:"Dratini",evolvesTo:"Dragonite",evolutionCost:100,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/148.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/148.png",canBeShiny:true,pokemonScale:1.5,rarity:"epic",spawnWeight:1,spawnTime:["day"],biomes:["water"],weatherBoost:["windy"],catchRate:0.2,escapeRate:0.35,fleeRate:0.1,stardustReward:1200,candyReward:20,candyFamily:"Dratini",buddyDistance:5,baseStats:{attack:163,defense:135,hp:156},fastMoves:["DragonBreath","IronTail"],chargedMoves:["DragonPulse","AquaTail","Wrap"]},
+Dragonite:{dex:149,name:"Dragonite",category:"A",description:"A",type:["Dragon","Flying"],evolvesFrom:"Dragonair",evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/149.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/149.png",canBeShiny:true,pokemonScale:2,rarity:"legendary",spawnWeight:0.5,spawnTime:["day"],biomes:["mountain","water"],weatherBoost:["windy"],catchRate:0.03,escapeRate:0.5,fleeRate:0.15,stardustReward:5000,candyReward:50,candyFamily:"Dratini",buddyDistance:20,baseStats:{attack:263,defense:198,hp:209},fastMoves:["DragonBreath","SteelWing"],chargedMoves:["Hurricane","DragonClaw","HyperBeam"]},
+Mewtwo:{dex:150,name:"Mewtwo",category:"A",description:"A",type:["Psychic"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/150.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/150.png",canBeShiny:true,pokemonScale:2,rarity:"legendary",spawnWeight:0.1,spawnTime:["night"],biomes:["city"],weatherBoost:["windy"],catchRate:0.02,escapeRate:0.6,fleeRate:0.2,stardustReward:10000,candyReward:100,candyFamily:"Mewtwo",buddyDistance:20,baseStats:{attack:300,defense:182,hp:214},fastMoves:["Confusion","PsychoCut"],chargedMoves:["Psychic","ShadowBall","HyperBeam"]},
+Mew:{dex:151,name:"Mew",category:"A",description:"A",type:["Psychic"],evolvesFrom:null,evolvesTo:null,evolutionCost:null,image:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/151.png",shinyImage:"https://www.pokemon.com/static-assets/content-assets/cms2/img/pokedex/full/151.png",canBeShiny:true,pokemonScale:1.2,rarity:"mythical",spawnWeight:0.05,spawnTime:["day","night"],biomes:["all"],weatherBoost:["windy"],catchRate:0.01,escapeRate:0.7,fleeRate:0.25,stardustReward:15000,candyReward:150,candyFamily:"Mew",buddyDistance:20,baseStats:{attack:210,defense:210,hp:225},fastMoves:["ShadowClaw","ChargeBeam"],chargedMoves:["Psychic","AncientPower","DragonClaw"]},
 };
 
 // -------- POKEMON --------
@@ -5284,7 +5858,7 @@ function showRewardPopup(pokemon, dust) {
   const card =
     document.getElementById("rewardCard");
 
-const candyreward = pokemon.candyReward;
+const candyreward = 10000 || pokemon.candyReward;
 
   document.getElementById("rewardDust").innerHTML =
   `✨${dust}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;🍬${candyreward}`;
@@ -5897,8 +6471,8 @@ function manualLoad() {
   location.reload();
 }
 
- 
- setInterval(saveGame, 10000); // every 10 seconds
+window.addEventListener("beforeunload", saveGame);
+setInterval(saveGame, 10000); // every 10 seconds
 
 
 // -------- START --------
